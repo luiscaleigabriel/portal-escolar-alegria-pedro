@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('chat_threads', function (Blueprint $table) {
             $table->id();
-            $table->string('type');
+            $table->foreignId('student_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('teacher_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('subject_id')->constrained()->cascadeOnDelete();
+            $table->unique(['student_id', 'teacher_id', 'subject_id']);
             $table->timestamps();
         });
     }
