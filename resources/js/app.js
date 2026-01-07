@@ -10,4 +10,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Seus scripts personalizados
-console.log('Bootstrap carregado!');
+console.log('Bootstrap carregado! aq');
