@@ -24,12 +24,14 @@ class ChatThread extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function participants() {
+    public function participants()
+    {
         return $this->hasMany(ChatParticipant::class);
     }
 
-    public function messages() {
+    public function messages()
+    {
         return $this->hasMany(Message::class);
     }
-    
+
 }

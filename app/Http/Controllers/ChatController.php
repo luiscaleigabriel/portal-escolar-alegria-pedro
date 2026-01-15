@@ -2,52 +2,65 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChatParticipant;
 use App\Models\ChatThread;
 use App\Models\Message;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
-    // Abrir ou criar thread
-    public function open($student_id,$subject_id)
+    public function index()
     {
-        $teacher = auth()->user()->teacher;
+        // Listar threads do usuário logado
+        $threads = ChatThread::whereHas('participants', function($q){
+            $q->where('user_id', auth()->id());
+        })->with('participants.user', 'messages.sender')->get();
 
-        $thread = ChatThread::firstOrCreate([
-            'student_id' => $student_id,
-            'teacher_id' => $teacher->id,
-            'subject_id' => $subject_id
-        ]);
-
-        return $thread;
+        return response()->json($threads);
     }
 
-    // Enviar mensagem
-    public function send(Request $request, $thread_id)
+    public function store(Request $request)
     {
-        $thread = ChatThread::findOrFail($thread_id);
+        $this->authorize('create', ChatThread::class);
 
-        // validação de acesso
-        if(!$this->canAccess($thread)) abort(403);
-
-        return Message::create([
-            'thread_id'=>$thread->id,
-            'sender_user_id'=>auth()->id(),
-            'message'=>$request->message
+        $request->validate([
+            'subject' => 'required|string',
+            'participants' => 'required|array|min:2' // student + guardian
         ]);
-    }
 
-    private function canAccess(ChatThread $thread)
-    {
-        $user = auth()->user();
+        $thread = ChatThread::create(['subject' => $request->subject]);
 
-        if($user->hasRole('teacher') && $thread->teacher->user_id == $user->id) return true;
-        if($user->hasRole('student') && $thread->student->user_id == $user->id) return true;
+        // Adiciona Teacher (criador)
+        ChatParticipant::create([
+            'chat_thread_id' => $thread->id,
+            'user_id' => auth()->id()
+        ]);
 
-        if($user->hasRole('guardian')) {
-            return $thread->student->guardians->contains('user_id',$user->id);
+        // Adiciona os outros participantes
+        foreach ($request->participants as $userId) {
+            ChatParticipant::create([
+                'chat_thread_id' => $thread->id,
+                'user_id' => $userId
+            ]);
         }
 
-        return false;
+        return response()->json($thread->load('participants.user'), 201);
+    }
+
+    public function message(Request $request, ChatThread $thread)
+    {
+        $this->authorize('message', $thread);
+
+        $request->validate([
+            'content' => 'required|string'
+        ]);
+
+        $message = Message::create([
+            'chat_thread_id' => $thread->id,
+            'user_id' => auth()->id(),
+            'content' => $request->content
+        ]);
+
+        return response()->json($message->load('sender'));
     }
 }
