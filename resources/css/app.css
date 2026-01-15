@@ -1,13 +1,23 @@
 /* Importe Bootstrap */
 @import 'bootstrap/dist/css/bootstrap.min.css';
-@import "./template/css/lineicons.css";
-@import "./template/css/main.css";
+@import "./template/lineicons.css";
+@import "./template/main.css";
 
-/* Seus estilos personalizados */
-body {
-    font-family: 'Segoe UI', sans-serif;
+/* Estilos personalizados */
+
+/* Auth */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
 }
 
-.custom-class {
-    /* seus estilos */
+.auth-box {
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    width: 380px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
 }

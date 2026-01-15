@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\HomeController;
@@ -24,8 +25,11 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
  *
  * Autênticação
  */
-Route::get('/login', fn() => view('auth.login'))->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('/register', [RegisteredUserController::class, 'store']);
 
 
 /**
