@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ReportCardController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -23,6 +24,10 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
  *
  * Auth
  */
+Route::get('/login', fn()=>view('auth.login'))->name('login');
+Route::post('/login', [AuthController::class,'login']);
+
+
 Route::middleware(['auth'])->group(function() {
     // Grades
     Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
@@ -50,3 +55,10 @@ Route::middleware('auth')->group(function() {
     Route::post('/chats/{thread}/message', [ChatController::class, 'message']); // Enviar mensagem
     Route::get('/chats/{thread}', [ChatController::class, 'show']); // Ver thread
 });
+
+
+/**
+ *
+ * Gerar PDF
+ */
+Route::middleware('auth')->get('/students/{student}/report', [ReportCardController::class, 'generate']);
