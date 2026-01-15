@@ -1,5 +1,7 @@
 /* Importe Bootstrap */
 @import 'bootstrap/dist/css/bootstrap.min.css';
+@import "./template/css/lineicons.css";
+@import "./template/css/main.css";
 
 /* Seus estilos personalizados */
 body {

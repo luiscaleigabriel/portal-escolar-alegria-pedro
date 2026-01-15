@@ -22,13 +22,30 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('l
 
 /**
  *
+ * Autênticação
+ */
+Route::get('/login', fn() => view('auth.login'))->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+
+/**
+ *
+ * Dashboard
+ */
+Route::get('/dashboard', function () {
+    return view('dashboard', [
+        'students' => \App\Models\Student::count(),
+        'teachers' => \App\Models\Teacher::count(),
+        'classes' => \App\Models\Turma::count(),
+        'messages' => \App\Models\Message::count()
+    ]);
+})->middleware('auth');
+
+/**
+ *
  * Auth
  */
-Route::get('/login', fn()=>view('auth.login'))->name('login');
-Route::post('/login', [AuthController::class,'login']);
-
-
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth'])->group(function () {
     // Grades
     Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
     Route::post('/grades', [GradeController::class, 'store'])->name('grades.store');
@@ -49,7 +66,7 @@ Route::middleware(['auth'])->group(function() {
  *
  * Chat
  */
-Route::middleware('auth')->group(function() {
+Route::middleware('auth')->group(function () {
     Route::get('/chats', [ChatController::class, 'index']); // Listar threads
     Route::post('/chats', [ChatController::class, 'store']); // Criar thread
     Route::post('/chats/{thread}/message', [ChatController::class, 'message']); // Enviar mensagem

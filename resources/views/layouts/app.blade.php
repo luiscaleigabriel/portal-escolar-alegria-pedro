@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="pt">
 
-        {{-- <title>{{ config('app.name', 'Alegria Pedro - Portal') }}</title> --}}
-        <title>Alegria Pedro - Portal</title>
+<head>
+    <meta charset="utf-8">
+    <title>Alegria Pedro</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
 
-        <!-- Fonts -->
+<body>
 
+    @include('layouts.sidebar')
+    @include('layouts.header')
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body>
+    <main class="main-wrapper">
+        @yield('content')
+    </main>
 
-    </body>
+</body>
+
 </html>
