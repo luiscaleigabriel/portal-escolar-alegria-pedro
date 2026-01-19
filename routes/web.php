@@ -4,52 +4,41 @@ use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportCardController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TurmaController;
+use App\Http\Controllers\SubjectController;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * Página Inicial
+ */
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 /**
- *
- * Home
+ * Autenticação
  */
-Route::get('/', [HomeController::class, 'index'])->name('site');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
+    Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('/register', [RegisteredUserController::class, 'store']);
+});
 
-
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login');
-
-/**
- *
- * Autênticação
- */
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-Route::post('/register', [RegisteredUserController::class, 'store']);
-
 
 /**
- *
- * Dashboard
- */
-Route::get('/dashboard', function () {
-    return view('dashboard', [
-        'students' => \App\Models\Student::count(),
-        'teachers' => \App\Models\Teacher::count(),
-        'classes' => \App\Models\Turma::count(),
-        'messages' => \App\Models\Message::count()
-    ]);
-})->middleware('auth');
-
-/**
- *
- * Auth
+ * Área Autenticada
  */
 Route::middleware(['auth'])->group(function () {
+    // Dashboard principal com redirecionamento por role
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     // Grades
     Route::get('/grades', [GradeController::class, 'index'])->name('grades.index');
     Route::post('/grades', [GradeController::class, 'store'])->name('grades.store');
@@ -63,23 +52,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/absences/{absence}', [AbsenceController::class, 'show'])->name('absences.show');
     Route::put('/absences/{absence}', [AbsenceController::class, 'update'])->name('absences.update');
     Route::delete('/absences/{absence}', [AbsenceController::class, 'destroy'])->name('absences.destroy');
+
+    // Chat
+    Route::get('/chats', [ChatController::class, 'index'])->name('chats.index');
+    Route::post('/chats', [ChatController::class, 'store'])->name('chats.store');
+    Route::post('/chats/{thread}/message', [ChatController::class, 'message'])->name('chats.message');
+    Route::get('/chats/{thread}', [ChatController::class, 'show'])->name('chats.show');
+
+    // Reports
+    Route::get('/students/{student}/report', [ReportCardController::class, 'generate'])->name('students.report');
+
+    // Admin Routes
+    Route::middleware(['role:admin|director'])->group(function () {
+        Route::resource('students', StudentController::class);
+        Route::resource('teachers', TeacherController::class);
+        Route::resource('turmas', TurmaController::class);
+        Route::resource('subjects', SubjectController::class);
+    });
 });
-
-
-/**
- *
- * Chat
- */
-Route::middleware('auth')->group(function () {
-    Route::get('/chats', [ChatController::class, 'index']); // Listar threads
-    Route::post('/chats', [ChatController::class, 'store']); // Criar thread
-    Route::post('/chats/{thread}/message', [ChatController::class, 'message']); // Enviar mensagem
-    Route::get('/chats/{thread}', [ChatController::class, 'show']); // Ver thread
-});
-
-
-/**
- *
- * Gerar PDF
- */
-Route::middleware('auth')->get('/students/{student}/report', [ReportCardController::class, 'generate']);

@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
 {
@@ -13,11 +15,22 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        Permission::create(['name'=>'launch grades']);
-        Permission::create(['name'=>'launch absences']);
-        Permission::create(['name'=>'manage students']);
-        Permission::create(['name'=>'manage teachers']);
-        Permission::create(['name'=>'post news']);
-        Permission::create(['name'=>'open chats']);
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $permissions = [
+            'create grades',
+            'create absences',
+            'manage students',
+            'manage teachers',
+            'post news',
+            'send messages',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate([
+                'name'       => $permission,
+                'guard_name' => 'web',
+            ]);
+        }
     }
 }

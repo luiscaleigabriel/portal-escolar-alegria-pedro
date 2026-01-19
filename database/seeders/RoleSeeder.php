@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RoleSeeder extends Seeder
 {
@@ -14,18 +15,48 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-       // Criar roles
-        $admin    = Role::create(['name'=>'admin']);
-        $director = Role::create(['name'=>'director']);
-        $teacher  = Role::create(['name'=>'teacher']);
-        $student  = Role::create(['name'=>'student']);
-        $guardian = Role::create(['name'=>'guardian']);
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // Atribuir permissões
-        $teacher->givePermissionTo(['launch grades','launch absences','open chats']);
+        // Roles
+        $admin = Role::firstOrCreate([
+            'name'       => 'admin',
+            'guard_name' => 'web',
+        ]);
 
-        $director->givePermissionTo(['manage students','manage teachers','post news']);
+        $director = Role::firstOrCreate([
+            'name'       => 'director',
+            'guard_name' => 'web',
+        ]);
 
+        $teacher = Role::firstOrCreate([
+            'name'       => 'teacher',
+            'guard_name' => 'web',
+        ]);
+
+        $student = Role::firstOrCreate([
+            'name'       => 'student',
+            'guard_name' => 'web',
+        ]);
+
+        $guardian = Role::firstOrCreate([
+            'name'       => 'guardian',
+            'guard_name' => 'web',
+        ]);
+
+        // Permissions
+        $teacher->givePermissionTo([
+            'create grades',
+            'create absences',
+            'send messages',
+        ]);
+
+        $director->givePermissionTo([
+            'manage students',
+            'manage teachers',
+            'post news',
+        ]);
+
+        // Admin tem tudo
         $admin->givePermissionTo(Permission::all());
     }
 }
