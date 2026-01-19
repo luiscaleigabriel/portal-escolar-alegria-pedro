@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Portal Escolar Instituto Polícia</title>
+    <title>Login - Portal Alegria Pedro</title>
 
     <!-- CSS via Vite -->
     @vite(['resources/css/auth.css'])
@@ -66,7 +66,7 @@
                             <div class="logo-circle">
                                 <img src="{{ asset('assets/images/logo.png') }}" alt="">
                             </div>
-                            <h1 class="h2 text-white mb-2">Portal Escolar</h1>
+                            <h1 class="h2 text-white mb-2">PORTAL ESCOLAR</h1>
                             <p class="text-white-50 mb-0">
                                 <span class="text-gradient-gold fw-bold">ALEGRIA PEDRO</span>
                             </p>

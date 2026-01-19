@@ -22,6 +22,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 /**
  * Autenticação
  */
+
+// Rotas de autenticação (apenas para visitantes)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);

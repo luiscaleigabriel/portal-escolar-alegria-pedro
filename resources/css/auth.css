@@ -10,7 +10,7 @@ img {
 
 /* Página de autenticação */
 .auth-page {
-    min-height: 100vh;
+    height: 100dvh;
     background: var(--ip-dark-bg);
     position: relative;
     overflow: auto;
@@ -290,4 +290,186 @@ img {
     background: linear-gradient(135deg, var(--ip-primary-blue) 0%, var(--ip-secondary-blue) 100%);
     color: white;
     border-radius: var(--bs-border-radius-xl) var(--bs-border-radius-xl) 0 0;
+}
+
+/* Estilos específicos para formulário de registro */
+.registration-wizard {
+    margin-bottom: 2rem;
+}
+
+.wizard-steps {
+    counter-reset: step;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.wizard-steps::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #E5E7EB;
+    z-index: 1;
+}
+
+.wizard-step {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    flex: 1;
+}
+
+.wizard-step::before {
+    counter-increment: step;
+    content: counter(step);
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    background: #E5E7EB;
+    color: #6B7280;
+    display: block;
+    margin: 0 auto 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.wizard-step.active::before {
+    background: var(--ip-primary-blue);
+    color: white;
+}
+
+.wizard-step.completed::before {
+    background: #10B981;
+    color: white;
+}
+
+.wizard-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.wizard-step.active .wizard-label {
+    color: var(--ip-primary-blue);
+    font-weight: 600;
+}
+
+/* Role selection cards */
+.role-option {
+    border: 2px solid #E5E7EB;
+    border-radius: var(--bs-border-radius-lg);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    height: 100%;
+}
+
+.role-option:hover {
+    border-color: var(--ip-accent-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.role-option.selected {
+    border-color: var(--ip-primary-blue);
+    background: rgba(30, 58, 138, 0.05);
+}
+
+.role-icon-lg {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Password strength meter */
+.password-strength-meter {
+    height: 6px;
+    background: #E5E7EB;
+    border-radius: 3px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.password-strength-indicator {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.strength-weak { background-color: #EF4444; }
+.strength-medium { background-color: #F59E0B; }
+.strength-strong { background-color: #10B981; }
+.strength-very-strong { background-color: #059669; }
+
+.strength-text {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+/* Form steps animation */
+.form-step {
+    display: none;
+    animation: slideIn 0.3s ease-out;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Terms and conditions */
+.terms-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #E5E7EB;
+    border-radius: var(--bs-border-radius);
+    padding: 1rem;
+    margin: 1rem 0;
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+.terms-container h6 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive adjustments for registration */
+@media (max-width: 768px) {
+    .role-option {
+        padding: 1rem;
+    }
+
+    .role-icon-lg {
+        font-size: 2rem;
+    }
+
+    .wizard-steps {
+        margin-bottom: 1.5rem;
+    }
+
+    .wizard-step::before {
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        font-size: 0.75rem;
+    }
 }

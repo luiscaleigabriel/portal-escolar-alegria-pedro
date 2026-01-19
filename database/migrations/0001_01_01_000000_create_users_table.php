@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('image')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('is_approved')->default(false)->after('email_verified_at');
+            $table->timestamp('approved_at')->nullable()->after('is_approved');
+            $table->foreignId('approved_by')->nullable()->constrained('users')->after('approved_at');
+            $table->text('rejection_reason')->nullable()->after('approved_by');
+            $table->string('phone')->nullable()->after('rejection_reason');
+            $table->string('address')->nullable()->after('phone');
+            $table->date('birth_date')->nullable()->after('address');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'suspended'])->default('pending')->after('birth_date');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -43,7 +43,18 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn([
+                'is_approved',
+                'approved_at',
+                'approved_by',
+                'rejection_reason',
+                'phone',
+                'address',
+                'birth_date',
+                'status'
+            ]);
+        });
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
