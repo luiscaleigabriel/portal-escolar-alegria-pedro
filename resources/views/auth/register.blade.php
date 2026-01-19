@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Portal Escolar Instituto Polícia</title>
+    <title>Registro - Portal Escolar Alegria Pedro</title>
 
     <!-- CSS via Vite -->
     @vite(['resources/css/auth.css'])
@@ -220,7 +220,7 @@
                             </div>
                             <h1 class="h2 text-white mb-2">Criar Conta</h1>
                             <p class="text-white-50 mb-0">
-                                <span class="text-gradient-gold fw-bold">INSTITUTO POLÍCIA</span>
+                                <span class="text-gradient-gold fw-bold">Portal Alegria Pedro</span>
                             </p>
                         </div>
                     </div>
@@ -361,7 +361,6 @@
                                                 <i class="lni lni-graduation role-icon"></i>
                                                 <h5 class="mb-2">Aluno</h5>
                                                 <p class="text-muted small">Estudante matriculado</p>
-                                                <div class="badge bg-primary">Necessita documento</div>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -370,7 +369,6 @@
                                                 <i class="lni lni-users role-icon"></i>
                                                 <h5 class="mb-2">Professor</h5>
                                                 <p class="text-muted small">Docente do instituto</p>
-                                                <div class="badge bg-success">Validação necessária</div>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -379,7 +377,6 @@
                                                 <i class="lni lni-user role-icon"></i>
                                                 <h5 class="mb-2">Responsável</h5>
                                                 <p class="text-muted small">Pai/mãe ou responsável</p>
-                                                <div class="badge bg-info">Vinculado a aluno</div>
                                             </div>
                                         </div>
                                     </div>
