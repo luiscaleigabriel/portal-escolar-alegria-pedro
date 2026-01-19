@@ -3,21 +3,285 @@
 @import "./template/lineicons.css";
 @import "./template/main.css";
 
-/* Estilos personalizados */
+/* Variáveis CSS */
+:root {
+    /* Cores baseadas no logo */
+    --ip-primary-blue: #1E3A8A;
+    --ip-secondary-blue: #3B82F6;
+    --ip-accent-blue: #60A5FA;
+    --ip-highlight-gold: #FBBF24;
+    --ip-light-gold: #FDE68A;
+    --ip-dark-bg: #0F172A;
+    --ip-light-bg: #F8FAFC;
+    --ip-card-bg: #FFFFFF;
 
-/* Auth */
-.auth-wrapper {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f1f5f9;
+    /* Sobrescrever variáveis do Bootstrap com nossas cores */
+    --bs-primary: var(--ip-primary-blue);
+    --bs-secondary: var(--ip-secondary-blue);
+    --bs-success: #10B981;
+    --bs-info: var(--ip-accent-blue);
+    --bs-warning: var(--ip-highlight-gold);
+    --bs-danger: #EF4444;
+    --bs-light: var(--ip-light-bg);
+    --bs-dark: var(--ip-dark-bg);
+
+    /* Bordas */
+    --bs-border-radius: 0.375rem;
+    --bs-border-radius-sm: 0.25rem;
+    --bs-border-radius-lg: 0.5rem;
+    --bs-border-radius-xl: 1rem;
+
+    /* Fontes */
+    --bs-font-sans-serif: 'Inter', system-ui, -apple-system, sans-serif;
+    --bs-body-font-family: var(--bs-font-sans-serif);
 }
 
-.auth-box {
-    background: #fff;
-    padding: 40px;
-    border-radius: 10px;
-    width: 380px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+/* Importar fonte Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Estilos gerais */
+body {
+    font-family: var(--bs-font-sans-serif);
+    background-color: var(--ip-light-bg);
+    color: #1F2937;
+}
+
+/* Utilitários personalizados */
+.ip-gradient-primary {
+    background: linear-gradient(135deg, var(--ip-primary-blue) 0%, var(--ip-secondary-blue) 100%);
+}
+
+.ip-gradient-gold {
+    background: linear-gradient(135deg, var(--ip-highlight-gold) 0%, var(--ip-light-gold) 100%);
+}
+
+.ip-gradient-dark {
+    background: linear-gradient(135deg, var(--ip-dark-bg) 0%, #1E293B 100%);
+}
+
+.text-gradient-primary {
+    background: linear-gradient(135deg, var(--ip-primary-blue) 0%, var(--ip-secondary-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.text-gradient-gold {
+    background: linear-gradient(135deg, var(--ip-highlight-gold) 0%, var(--ip-light-gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn-ip-outline {
+    border: 2px solid var(--ip-primary-blue);
+    color: var(--ip-primary-blue);
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-ip-outline:hover {
+    background: var(--ip-primary-blue);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Botões customizados */
+.btn-ip-primary {
+    background: linear-gradient(135deg, var(--ip-primary-blue) 0%, var(--ip-secondary-blue) 100%);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-ip-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.3);
+    color: white;
+}
+
+.btn-ip-gold {
+    background: linear-gradient(135deg, var(--ip-highlight-gold) 0%, var(--ip-light-gold) 100%);
+    border: none;
+    color: #1F2937;
+    transition: all 0.3s ease;
+}
+
+.btn-ip-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(251, 191, 36, 0.3);
+    color: #1F2937;
+}
+
+/* Cards customizados */
+.ip-card {
+    background: var(--ip-card-bg);
+    border-radius: var(--bs-border-radius-lg);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.ip-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+/* Navbar customizada */
+.navbar-ip {
+    background: var(--ip-dark-bg) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-ip .navbar-brand {
+    font-weight: 700;
+    color: white !important;
+}
+
+.navbar-ip .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-ip .nav-link:hover,
+.navbar-ip .nav-link.active {
+    color: white !important;
+}
+
+/* Sidebar customizada */
+.sidebar-ip {
+    background: var(--ip-dark-bg);
+    color: white;
+    min-height: 100vh;
+    width: 250px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-ip .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.75rem 1rem;
+    border-radius: var(--bs-border-radius);
+    margin: 0.25rem 0;
+    transition: all 0.3s ease;
+}
+
+.sidebar-ip .nav-link:hover,
+.sidebar-ip .nav-link.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: white;
+}
+
+/* Formulários customizados */
+.ip-form-control {
+    border: 2px solid #E5E7EB;
+    border-radius: var(--bs-border-radius-lg);
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    background-color: var(--ip-light-bg);
+}
+
+.ip-form-control:focus {
+    border-color: var(--ip-accent-blue);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    background-color: white;
+}
+
+/* Tabelas customizadas */
+.ip-table {
+    background: white;
+    border-radius: var(--bs-border-radius-lg);
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.ip-table thead {
+    background: linear-gradient(135deg, var(--ip-primary-blue) 0%, var(--ip-secondary-blue) 100%);
+    color: white;
+}
+
+/* Dashboard widgets */
+.dashboard-card {
+    border-radius: var(--bs-border-radius-lg);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.dashboard-stat {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ip-primary-blue);
+}
+
+/* Badges customizados */
+.badge-ip {
+    border-radius: 50px;
+    padding: 0.25rem 0.75rem;
+    font-weight: 500;
+}
+
+.badge-ip-primary {
+    background: rgba(30, 58, 138, 0.1);
+    color: var(--ip-primary-blue);
+}
+
+.badge-ip-gold {
+    background: rgba(251, 191, 36, 0.1);
+    color: var(--ip-highlight-gold);
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Responsividade extra */
+@media (max-width: 768px) {
+    .sidebar-ip {
+        width: 70px;
+    }
+
+    .sidebar-ip .nav-text {
+        display: none;
+    }
+
+    .dashboard-stat {
+        font-size: 1.5rem;
+    }
+}
+
+/* Scrollbar customizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F3F4F6;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--ip-accent-blue);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--ip-secondary-blue);
 }

@@ -1,5 +1,5 @@
 // Import Bootstrap JS
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import * as bootstrap from 'bootstrap';
 import './template/main.js'
 
 // Seus scripts personalizados
