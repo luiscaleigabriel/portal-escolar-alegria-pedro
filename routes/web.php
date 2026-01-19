@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\Admin\UserApprovalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
@@ -22,8 +23,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 /**
  * Autenticação
  */
-
-// Rotas de autenticação (apenas para visitantes)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
@@ -33,6 +32,40 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+// Rotas de status de conta
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pending-approval', function () {
+        return view('auth.pending-approval');
+    })->name('pending-approval');
+
+    Route::get('/account/rejected', function () {
+        return view('auth.account-rejected');
+    })->name('account.rejected');
+
+    Route::get('/account/suspended', function () {
+        return view('auth.account-suspended');
+    })->name('account.suspended');
+});
+
+// Rotas de administração (apenas admin/director)
+Route::middleware(['auth', 'role:admin|director'])->prefix('admin')->name('admin.')->group(function () {
+    // Aprovação de usuários
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/pending', [UserApprovalController::class, 'pending'])->name('pending');
+        Route::get('/{user}', [UserApprovalController::class, 'show'])->name('show');
+        Route::post('/{user}/approve', [UserApprovalController::class, 'approve'])->name('approve');
+        Route::post('/{user}/reject', [UserApprovalController::class, 'reject'])->name('reject');
+        Route::post('/{user}/suspend', [UserApprovalController::class, 'suspend'])->name('suspend');
+        Route::get('/', [UserApprovalController::class, 'index'])->name('index');
+        Route::get('/stats', [UserApprovalController::class, 'stats'])->name('stats');
+    });
+});
+
+// Rotas públicas
+Route::get('/register/success', function () {
+    return view('auth.register-success');
+})->name('register.success');
 
 /**
  * Área Autenticada

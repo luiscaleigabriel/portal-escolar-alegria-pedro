@@ -7,17 +7,46 @@ use App\Models\Teacher;
 use App\Models\Turma;
 use App\Models\Grade;
 use App\Models\Absence;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'approved']);
+    }
+
     public function index()
     {
         $user = auth()->user();
 
-        if ($user->hasRole('admin') || $user->hasRole('director')) {
+        // Se for admin/director, mostrar dashboard admin
+        if ($user->hasRole(['admin', 'director'])) {
             return $this->adminDashboard();
-        } elseif ($user->hasRole('teacher')) {
+        }
+
+        // Verificar se o usuário tem o perfil correspondente
+        if ($user->hasRole('student') && !$user->student) {
+            return view('dashboard.profile-incomplete', [
+                'message' => 'Seu perfil de aluno ainda não está completo. Aguarde a configuração pela administração.'
+            ]);
+        }
+
+        if ($user->hasRole('teacher') && !$user->teacher) {
+            return view('dashboard.profile-incomplete', [
+                'message' => 'Seu perfil de professor ainda não está completo. Aguarde a configuração pela administração.'
+            ]);
+        }
+
+        if ($user->hasRole('guardian') && !$user->guardian) {
+            return view('dashboard.profile-incomplete', [
+                'message' => 'Seu perfil de responsável ainda não está completo. Aguarde a configuração pela administração.'
+            ]);
+        }
+
+        // Mostrar dashboard baseado no role
+        if ($user->hasRole('teacher')) {
             return $this->teacherDashboard($user);
         } elseif ($user->hasRole('student')) {
             return $this->studentDashboard($user);
@@ -25,21 +54,22 @@ class DashboardController extends Controller
             return $this->guardianDashboard($user);
         }
 
-        // Fallback - redireciona para home
+        // Fallback
         return redirect()->route('home');
     }
 
     private function adminDashboard()
     {
-        $data = [
-            'students' => Student::count(),
-            'teachers' => Teacher::count(),
-            'turmas' => Turma::count(),
-            'recent_students' => Student::with('user')->latest()->take(5)->get(),
-            'recent_teachers' => Teacher::with('user')->latest()->take(5)->get(),
+        $stats = [
+            'pending_users' => User::where('status', 'pending')->count(),
+            'total_users' => User::count(),
+            'total_students' => Student::count(),
+            'total_teachers' => Teacher::count(),
+            'total_turmas' => Turma::count(),
+            'recent_registrations' => User::latest()->take(5)->get(),
         ];
 
-        return view('dashboard.admin', $data);
+        return view('dashboard.admin', $stats);
     }
 
     private function teacherDashboard($user)

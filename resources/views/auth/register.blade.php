@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -161,20 +162,32 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .student-fields, .teacher-fields, .guardian-fields {
+        .student-fields,
+        .teacher-fields,
+        .guardian-fields {
             display: none;
         }
 
-        .student-fields.show, .teacher-fields.show, .guardian-fields.show {
+        .student-fields.show,
+        .teacher-fields.show,
+        .guardian-fields.show {
             display: block;
             animation: fadeIn 0.3s ease-out;
         }
     </style>
 </head>
+
 <body class="auth-page">
     <!-- Loading inicial -->
     <div class="loading" id="loading">
@@ -243,13 +256,9 @@
                                         <i class="lni lni-user"></i>
                                         Nome Completo
                                     </label>
-                                    <input type="text"
-                                           id="name"
-                                           name="name"
-                                           class="form-control auth-form-control"
-                                           value="{{ old('name') }}"
-                                           required
-                                           placeholder="João da Silva">
+                                    <input type="text" id="name" name="name"
+                                        class="form-control auth-form-control" value="{{ old('name') }}" required
+                                        placeholder="João da Silva">
                                 </div>
 
                                 <div class="mb-3">
@@ -257,13 +266,9 @@
                                         <i class="lni lni-envelope"></i>
                                         Email
                                     </label>
-                                    <input type="email"
-                                           id="email"
-                                           name="email"
-                                           class="form-control auth-form-control"
-                                           value="{{ old('email') }}"
-                                           required
-                                           placeholder="seu@email.com">
+                                    <input type="email" id="email" name="email"
+                                        class="form-control auth-form-control" value="{{ old('email') }}" required
+                                        placeholder="seu@email.com">
                                     <div class="form-text">Usaremos este email para comunicação</div>
                                 </div>
 
@@ -273,13 +278,9 @@
                                             <i class="lni lni-lock-alt"></i>
                                             Senha
                                         </label>
-                                        <input type="password"
-                                               id="password"
-                                               name="password"
-                                               class="form-control auth-form-control"
-                                               required
-                                               placeholder="••••••••"
-                                               oninput="checkPasswordStrength(this.value)">
+                                        <input type="password" id="password" name="password"
+                                            class="form-control auth-form-control" required placeholder="••••••••"
+                                            oninput="checkPasswordStrength(this.value)">
                                         <div class="password-strength">
                                             <div class="strength-bar">
                                                 <div class="strength-fill" id="strengthFill"></div>
@@ -293,13 +294,9 @@
                                             <i class="lni lni-lock-alt"></i>
                                             Confirmar Senha
                                         </label>
-                                        <input type="password"
-                                               id="password_confirmation"
-                                               name="password_confirmation"
-                                               class="form-control auth-form-control"
-                                               required
-                                               placeholder="••••••••"
-                                               oninput="checkPasswordMatch()">
+                                        <input type="password" id="password_confirmation" name="password_confirmation"
+                                            class="form-control auth-form-control" required placeholder="••••••••"
+                                            oninput="checkPasswordMatch()">
                                         <div class="form-text" id="passwordMatchText"></div>
                                     </div>
                                 </div>
@@ -323,24 +320,85 @@
 
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-4">
-                                        <div class="role-card student" onclick="selectRole('student')" id="roleStudent">
+                                        <div class="role-card student" onclick="selectRole('student')"
+                                            id="roleStudent">
                                             <i class="lni lni-graduation role-icon"></i>
                                             <h5 class="mb-2">Aluno</h5>
                                             <p class="text-muted small">Estudante matriculado no instituto</p>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="role-card teacher" onclick="selectRole('teacher')" id="roleTeacher">
+                                        <div class="role-card teacher" onclick="selectRole('teacher')"
+                                            id="roleTeacher">
                                             <i class="lni lni-users role-icon"></i>
                                             <h5 class="mb-2">Professor</h5>
                                             <p class="text-muted small">Docente do instituto</p>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <div class="role-card guardian" onclick="selectRole('guardian')" id="roleGuardian">
+                                        <div class="role-card guardian" onclick="selectRole('guardian')"
+                                            id="roleGuardian">
                                             <i class="lni lni-user role-icon"></i>
                                             <h5 class="mb-2">Responsável</h5>
                                             <p class="text-muted small">Pai/mãe ou responsável legal</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Campos adicionais para todos os usuários -->
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">
+                                            <i class="lni lni-phone"></i>
+                                            Telefone *
+                                        </label>
+                                        <input type="tel" id="phone" name="phone"
+                                            class="form-control auth-form-control" value="{{ old('phone') }}"
+                                            required placeholder="+244 900 000 000">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="birth_date" class="form-label">
+                                            <i class="lni lni-calendar"></i>
+                                            Data de Nascimento *
+                                        </label>
+                                        <input type="date" id="birth_date" name="birth_date"
+                                            class="form-control auth-form-control" value="{{ old('birth_date') }}"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">
+                                        <i class="lni lni-map-marker"></i>
+                                        Endereço *
+                                    </label>
+                                    <textarea id="address" name="address" class="form-control auth-form-control" rows="2" required
+                                        placeholder="Sua morada completa">{{ old('address') }}</textarea>
+                                </div>
+
+                                <!-- Adicionar este campo específico para alunos -->
+                                <div class="student-fields" id="studentFields">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label for="identity_document" class="form-label">
+                                                <i class="lni lni-id-card"></i>
+                                                Documento de Identificação *
+                                            </label>
+                                            <input type="text" id="identity_document" name="identity_document"
+                                                class="form-control auth-form-control"
+                                                value="{{ old('identity_document') }}" placeholder="BI/Passaporte">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="registration_number" class="form-label">
+                                                <i class="lni lni-agenda"></i>
+                                                Número de Matrícula (opcional)
+                                            </label>
+                                            <input type="text" id="registration_number" name="registration_number"
+                                                class="form-control auth-form-control"
+                                                value="{{ old('registration_number') }}"
+                                                placeholder="Número da matrícula">
                                         </div>
                                     </div>
                                 </div>
@@ -354,11 +412,8 @@
                                                 <i class="lni lni-id-card"></i>
                                                 Documento de Identificação
                                             </label>
-                                            <input type="text"
-                                                   id="identity_document"
-                                                   name="identity_document"
-                                                   class="form-control auth-form-control"
-                                                   placeholder="BI/Passaporte">
+                                            <input type="text" id="identity_document" name="identity_document"
+                                                class="form-control auth-form-control" placeholder="BI/Passaporte">
                                             <div class="form-text">Número do documento oficial</div>
                                         </div>
                                     </div>
@@ -370,11 +425,8 @@
                                                 <i class="lni lni-phone"></i>
                                                 Telefone
                                             </label>
-                                            <input type="tel"
-                                                   id="teacher_phone"
-                                                   name="phone"
-                                                   class="form-control auth-form-control"
-                                                   placeholder="+244 900 000 000">
+                                            <input type="tel" id="teacher_phone" name="phone"
+                                                class="form-control auth-form-control" placeholder="+244 900 000 000">
                                         </div>
                                     </div>
 
@@ -385,11 +437,8 @@
                                                 <i class="lni lni-phone"></i>
                                                 Telefone
                                             </label>
-                                            <input type="tel"
-                                                   id="guardian_phone"
-                                                   name="phone"
-                                                   class="form-control auth-form-control"
-                                                   placeholder="+244 900 000 000">
+                                            <input type="tel" id="guardian_phone" name="phone"
+                                                class="form-control auth-form-control" placeholder="+244 900 000 000">
                                             <div class="form-text">Para contato em caso de emergência</div>
                                         </div>
                                     </div>
@@ -402,7 +451,8 @@
                                         <i class="lni lni-arrow-left"></i>
                                         Voltar
                                     </button>
-                                    <button type="button" class="btn btn-ip-primary" onclick="nextStep(3)" id="nextStep2Btn" disabled>
+                                    <button type="button" class="btn btn-ip-primary" onclick="nextStep(3)"
+                                        id="nextStep2Btn" disabled>
                                         Próximo
                                         <i class="lni lni-arrow-right"></i>
                                     </button>
@@ -439,7 +489,8 @@
 
                                 <div class="mb-4 terms-checkbox">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                                        <input class="form-check-input" type="checkbox" id="terms"
+                                            name="terms" required>
                                         <label class="form-check-label" for="terms">
                                             Concordo com os
                                             <a href="#" class="terms-link">Termos de Uso</a>
@@ -452,7 +503,8 @@
                                 <div class="alert alert-info">
                                     <i class="lni lni-information"></i>
                                     <small>
-                                        Após o registro, sua conta precisará ser ativada pela administração do instituto.
+                                        Após o registro, sua conta precisará ser ativada pela administração do
+                                        instituto.
                                         Você receberá um email quando isso acontecer.
                                     </small>
                                 </div>
@@ -687,11 +739,15 @@
         }
 
         function getRoleName(role) {
-            switch(role) {
-                case 'student': return 'Aluno';
-                case 'teacher': return 'Professor';
-                case 'guardian': return 'Responsável';
-                default: return '';
+            switch (role) {
+                case 'student':
+                    return 'Aluno';
+                case 'teacher':
+                    return 'Professor';
+                case 'guardian':
+                    return 'Responsável';
+                default:
+                    return '';
             }
         }
 
@@ -720,7 +776,7 @@
             if (/[0-9]/.test(password)) strength++;
             if (/[^A-Za-z0-9]/.test(password)) strength++;
 
-            switch(strength) {
+            switch (strength) {
                 case 0:
                 case 1:
                     color = '#EF4444';
@@ -779,4 +835,5 @@
     <!-- Vite JS -->
     @vite(['resources/js/app.js'])
 </body>
+
 </html>
