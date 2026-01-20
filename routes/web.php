@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserApprovalController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GradeController;
+use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\StudentController;
@@ -104,4 +106,66 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('turmas', TurmaController::class);
         Route::resource('subjects', SubjectController::class);
     });
+});
+
+
+// Área administrativa
+Route::prefix('admin')->middleware(['auth', 'approved', 'role:admin|director'])->group(function () {
+    // Dashboard admin
+    Route::get('/', [AdminDashboardController::class, 'index'])
+        ->name('admin.dashboard');
+    Route::get('/stats', [AdminDashboardController::class, 'stats'])
+        ->name('admin.stats');
+
+    // Usuários
+    Route::prefix('users')->group(function () {
+        Route::get('/pending', [UserApprovalController::class, 'pending'])
+            ->name('admin.users.pending');
+        Route::get('/', [UserApprovalController::class, 'index'])
+            ->name('admin.users.index');
+        Route::get('/stats', [UserApprovalController::class, 'stats'])
+            ->name('admin.users.stats');
+        Route::get('/{user}', [UserApprovalController::class, 'show'])
+            ->name('admin.users.show');
+        Route::post('/{user}/approve', [UserApprovalController::class, 'approve'])
+            ->name('admin.users.approve');
+        Route::post('/{user}/reject', [UserApprovalController::class, 'reject'])
+            ->name('admin.users.reject');
+        Route::post('/{user}/suspend', [UserApprovalController::class, 'suspend'])
+            ->name('admin.users.suspend');
+
+        // Ações em lote
+        Route::post('/batch-approve', [AdminDashboardController::class, 'batchApprove'])
+            ->name('admin.users.batch.approve');
+        Route::post('/batch-reject', [AdminDashboardController::class, 'batchReject'])
+            ->name('admin.users.batch.reject');
+    });
+
+    // Chat admin
+    Route::prefix('chat')->group(function () {
+        Route::get('/', [ChatController::class, 'index'])
+            ->name('admin.chat.index');
+        Route::post('/', [ChatController::class, 'store'])
+            ->name('admin.chat.store');
+        Route::get('/{thread}/export', [ChatController::class, 'export'])
+            ->name('admin.chat.export');
+        Route::delete('/{thread}', [ChatController::class, 'destroy'])
+            ->name('admin.chat.destroy');
+    });
+
+    // CRUD completo
+    Route::resource('students', StudentController::class);
+    Route::resource('teachers', TeacherController::class);
+    Route::resource('turmas', TurmaController::class);
+    Route::resource('subjects', SubjectController::class);
+    Route::resource('grades', GradeController::class);
+    Route::resource('absences', GuardianController::class);
+});
+
+// Chat para todos usuários
+Route::prefix('chat')->middleware(['auth', 'approved'])->group(function () {
+    Route::get('/', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/', [ChatController::class, 'store'])->name('chat.store');
+    Route::post('/threads/{thread}/messages', [ChatController::class, 'message'])
+        ->name('chat.message');
 });
