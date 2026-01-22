@@ -102,16 +102,16 @@ class DashboardController extends Controller
             ]
         ];
 
-        return view('admin.index', $stats);
+        return view('admin.index', ['stats' => $stats]);
         // Se a view admin.index não existir, redirecionar para dashboard.admin
         if (view()->exists('admin.index')) {
-            return view('admin.index', $stats);
+            return view('admin.index', ['stats' => $stats]);
             echo "aaaa";
         } elseif (view()->exists('dashboard.admin')) {
-            return view('admin.index', $stats);
+            return view('admin.index', ['stats' => $stats]);
         } else {
             // Fallback básico
-            return view('dashboard.admin-fallback', $stats);
+            return view('dashboard.admin-fallback', ['stats' => $stats]);
         }
     }
 

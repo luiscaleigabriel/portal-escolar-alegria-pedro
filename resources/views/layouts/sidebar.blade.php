@@ -182,7 +182,7 @@
 
             <!-- Menu comum a todos -->
             <li class="nav-item">
-                <a href="{{ route('profile.edit') }}">
+                <a href="">
                     <i class="lni lni-user"></i>
                     <span class="nav-text">Meu Perfil</span>
                 </a>
