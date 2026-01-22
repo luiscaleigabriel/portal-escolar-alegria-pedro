@@ -373,7 +373,7 @@
 
 /* Tabela de usuários com zebra */
 .recent-users-table tbody tr:nth-child(even) {
-    background-color: #fafafa;
+    background-color: #cccccc11;
 }
 
 .recent-users-table tbody tr:hover {

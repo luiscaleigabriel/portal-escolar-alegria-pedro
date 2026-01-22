@@ -110,35 +110,33 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Área administrativa
-Route::prefix('admin')->middleware(['auth', 'approved', 'role:admin|director'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'approved', 'role:admin|director'])->group(function () {
     // Dashboard admin
     Route::get('/', [AdminDashboardController::class, 'index'])
-        ->name('admin.dashboard');
+        ->name('dashboard');
     Route::get('/stats', [AdminDashboardController::class, 'stats'])
-        ->name('admin.stats');
+        ->name('stats');
 
     // Usuários
-    Route::prefix('users')->group(function () {
-        Route::get('/pending', [UserApprovalController::class, 'pending'])
-            ->name('admin.users.pending');
-        Route::get('/', [UserApprovalController::class, 'index'])
-            ->name('admin.users.index');
-        Route::get('/stats', [UserApprovalController::class, 'stats'])
-            ->name('admin.users.stats');
-        Route::get('/{user}', [UserApprovalController::class, 'show'])
-            ->name('admin.users.show');
-        Route::post('/{user}/approve', [UserApprovalController::class, 'approve'])
-            ->name('admin.users.approve');
-        Route::post('/{user}/reject', [UserApprovalController::class, 'reject'])
-            ->name('admin.users.reject');
-        Route::post('/{user}/suspend', [UserApprovalController::class, 'suspend'])
-            ->name('admin.users.suspend');
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::get('/{user}', [UserController::class, 'show'])->name('show');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [UserController::class, 'update'])->name('update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
 
-        // Ações em lote
-        Route::post('/batch-approve', [AdminDashboardController::class, 'batchApprove'])
-            ->name('admin.users.batch.approve');
-        Route::post('/batch-reject', [AdminDashboardController::class, 'batchReject'])
-            ->name('admin.users.batch.reject');
+        // Ações de moderação
+        Route::post('/{user}/approve', [UserController::class, 'approve'])->name('approve');
+        Route::post('/{user}/reject', [UserController::class, 'reject'])->name('reject');
+        Route::post('/{user}/suspend', [UserController::class, 'suspend'])->name('suspend');
+        Route::post('/{user}/activate', [UserController::class, 'activate'])->name('activate');
+
+        // Ações em massa
+        Route::post('/bulk-actions', [UserController::class, 'bulkActions'])->name('bulk-actions');
+        Route::post('/import', [UserController::class, 'import'])->name('import');
+        Route::get('/export', [UserController::class, 'export'])->name('export');
     });
 
     // Chat admin

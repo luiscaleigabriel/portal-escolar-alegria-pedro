@@ -1,21 +1,11 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Portal Alegria</title>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Seus estilos -->
-    <@vite(['resources/css/admin.css', 'resources/js/app.js'])
-
-</head>
-<body>
+@extends('layouts.app')
+@section('cssjs')
+@vite(['resources/css/admin.css', 'resources/js/app.js'])
+@endsection
+@section('content')
     <div class="admin-wrapper">
         <!-- Sidebar -->
-        
+        @include('admin.partials.sidebar')
 
         <!-- Conteúdo Principal -->
         <main class="admin-main">
@@ -66,7 +56,7 @@
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                 <i class="fas fa-sign-out-alt me-2"></i>
                                 Sair
                             </a>
@@ -80,7 +70,7 @@
 
             <!-- Conteúdo -->
             <div class="admin-content">
-                @if(isset($stats))
+                @if (isset($stats))
                     <!-- Cabeçalho da Página -->
                     <div class="page-header">
                         <h1 class="page-title">Painel Administrativo</h1>
@@ -139,7 +129,8 @@
 
                         <!-- Total de Professores -->
                         <div class="stat-card animate-card" style="animation-delay: 0.4s">
-                            <div class="stat-icon" style="background: rgba(96, 165, 250, 0.1); color: var(--ip-accent-blue);">
+                            <div class="stat-icon"
+                                style="background: rgba(96, 165, 250, 0.1); color: var(--ip-accent-blue);">
                                 <i class="fas fa-chalkboard-teacher"></i>
                             </div>
                             <div class="stat-info">
@@ -196,7 +187,7 @@
                                 </div>
                             </div>
 
-                            @if(isset($stats['recent_registrations']) && $stats['recent_registrations']->count() > 0)
+                            @if (isset($stats['recent_registrations']) && $stats['recent_registrations']->count() > 0)
                                 <div class="table-responsive">
                                     <table class="recent-users-table">
                                         <thead>
@@ -209,7 +200,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($stats['recent_registrations'] as $user)
+                                            @foreach ($stats['recent_registrations'] as $user)
                                                 <tr>
                                                     <td>
                                                         <div class="d-flex align-items-center gap-2">
@@ -221,12 +212,13 @@
                                                     </td>
                                                     <td>{{ $user->email }}</td>
                                                     <td>
-                                                        @foreach($user->roles as $role)
-                                                            <span class="badge bg-secondary me-1">{{ $role->name }}</span>
+                                                        @foreach ($user->roles as $role)
+                                                            <span
+                                                                class="badge bg-secondary me-1">{{ $role->name }}</span>
                                                         @endforeach
                                                     </td>
                                                     <td>
-                                                        @if($user->is_approved)
+                                                        @if ($user->is_approved)
                                                             <span class="status-badge status-approved">Aprovado</span>
                                                         @else
                                                             <span class="status-badge status-pending">Pendente</span>
@@ -253,27 +245,32 @@
                             </div>
 
                             <div class="role-distribution">
-                                @foreach($stats['by_role'] ?? [] as $role => $count)
-                                    @if($role && $count > 0)
+                                @foreach ($stats['by_role'] ?? [] as $role => $count)
+                                    @if ($role && $count > 0)
                                         <div class="role-item">
                                             <div class="role-info">
                                                 <div class="role-icon ip-gradient-primary">
                                                     @switch($role)
                                                         @case('student')
                                                             <i class="fas fa-user-graduate"></i>
-                                                            @break
+                                                        @break
+
                                                         @case('teacher')
                                                             <i class="fas fa-chalkboard-teacher"></i>
-                                                            @break
+                                                        @break
+
                                                         @case('guardian')
                                                             <i class="fas fa-user-friends"></i>
-                                                            @break
+                                                        @break
+
                                                         @case('admin')
                                                             <i class="fas fa-user-shield"></i>
-                                                            @break
+                                                        @break
+
                                                         @case('director')
                                                             <i class="fas fa-user-tie"></i>
-                                                            @break
+                                                        @break
+
                                                         @default
                                                             <i class="fas fa-user"></i>
                                                     @endswitch
@@ -297,7 +294,8 @@
                                         <small class="text-muted">Aprovados</small>
                                     </div>
                                     <div class="text-center">
-                                        <div class="display-6 text-warning fw-bold">{{ $stats['pending_users'] ?? 0 }}</div>
+                                        <div class="display-6 text-warning fw-bold">{{ $stats['pending_users'] ?? 0 }}
+                                        </div>
                                         <small class="text-muted">Pendentes</small>
                                     </div>
                                     <div class="text-center">
@@ -331,13 +329,13 @@
                             </div>
                         </div>
                     </div>
-
                 @else
                     <!-- Fallback se não houver dados -->
                     <div class="text-center py-5">
                         <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
                         <h3 class="text-warning mb-3">Dados não disponíveis</h3>
-                        <p class="text-muted">Os dados estatísticos não puderam ser carregados. Por favor, verifique a conexão com o banco de dados.</p>
+                        <p class="text-muted">Os dados estatísticos não puderam ser carregados. Por favor, verifique a
+                            conexão com o banco de dados.</p>
                         <button class="btn btn-ip-primary mt-2" onclick="window.location.reload()">
                             <i class="fas fa-sync me-2"></i>
                             Recarregar
@@ -347,6 +345,4 @@
             </div>
         </main>
     </div>
-
-</body>
-</html>
+@endsection
