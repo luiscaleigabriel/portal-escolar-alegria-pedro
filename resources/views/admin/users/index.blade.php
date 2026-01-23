@@ -302,91 +302,94 @@
                                         @endforelse
                                     </tbody>
                                 </table>
+
+                                <!-- Paginação -->
+                                @if ($users->hasPages())
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div class="text-muted">
+                                            Mostrando {{ $users->firstItem() }} a {{ $users->lastItem() }} de
+                                            {{ $users->total() }}
+                                            resultados
+                                        </div>
+                                        <div>
+                                            {{ $users->links() }}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
-
-                            <!-- Paginação -->
-                            @if ($users->hasPages())
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <div class="text-muted">
-                                        Mostrando {{ $users->firstItem() }} a {{ $users->lastItem() }} de
-                                        {{ $users->total() }}
-                                        resultados
-                                    </div>
-                                    <div>
-                                        {{ $users->links() }}
-                                    </div>
-                                </div>
-                            @endif
                         </div>
                     </div>
-                </div>
 
-                <!-- Modal de Filtros -->
-                <div class="modal fade" id="filterModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <form action="{{ route('admin.users.index') }}" method="GET">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Filtrar Usuários</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <label class="form-label">Buscar</label>
-                                            <input type="text" class="form-control" name="search"
-                                                value="{{ request('search') }}" placeholder="Nome, email ou telefone...">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Status</label>
-                                            <select class="form-select" name="status">
-                                                <option value="">Todos</option>
-                                                <option value="pending"
-                                                    {{ request('status') == 'pending' ? 'selected' : '' }}>
-                                                    Pendentes</option>
-                                                <option value="approved"
-                                                    {{ request('status') == 'approved' ? 'selected' : '' }}>
-                                                    Aprovados</option>
-                                                <option value="rejected"
-                                                    {{ request('status') == 'rejected' ? 'selected' : '' }}>
-                                                    Rejeitados</option>
-                                                <option value="suspended"
-                                                    {{ request('status') == 'suspended' ? 'selected' : '' }}>
-                                                    Suspensos</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label">Perfil</label>
-                                            <select class="form-select" name="role">
-                                                <option value="">Todos</option>
-                                                @foreach ($roles as $role)
-                                                    <option value="{{ $role->name }}"
-                                                        {{ request('role') == $role->name ? 'selected' : '' }}>
-                                                        {{ ucfirst($role->name) }}
+                    <!-- Modal de Filtros -->
+                    <div class="modal fade" id="filterModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form action="{{ route('admin.users.index') }}" method="GET">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Filtrar Usuários</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label">Buscar</label>
+                                                <input type="text" class="form-control" name="search"
+                                                    value="{{ request('search') }}" placeholder="Nome, email ou telefone...">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Status</label>
+                                                <select class="form-select" name="status">
+                                                    <option value="">Todos</option>
+                                                    <option value="pending"
+                                                        {{ request('status') == 'pending' ? 'selected' : '' }}>
+                                                        Pendentes</option>
+                                                    <option value="approved"
+                                                        {{ request('status') == 'approved' ? 'selected' : '' }}>
+                                                        Aprovados</option>
+                                                    <option value="rejected"
+                                                        {{ request('status') == 'rejected' ? 'selected' : '' }}>
+                                                        Rejeitados</option>
+                                                    <option value="suspended"
+                                                        {{ request('status') == 'suspended' ? 'selected' : '' }}>
+                                                        Suspensos</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Perfil</label>
+                                                <select class="form-select" name="role">
+                                                    <option value="">Todos</option>
+                                                    @foreach ($roles as $role)
+                                                        <option value="{{ $role->name }}"
+                                                            {{ request('role') == $role->name ? 'selected' : '' }}>
+                                                            {{ ucfirst($role->name) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Email Verificado</label>
+                                                <select class="form-select" name="verified">
+                                                    <option value="">Todos</option>
+                                                    <option value="yes"
+                                                        {{ request('verified') == 'yes' ? 'selected' : '' }}>
+                                                        Sim
                                                     </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-12">
-                                            <label class="form-label">Email Verificado</label>
-                                            <select class="form-select" name="verified">
-                                                <option value="">Todos</option>
-                                                <option value="yes" {{ request('verified') == 'yes' ? 'selected' : '' }}>
-                                                    Sim
-                                                </option>
-                                                <option value="no" {{ request('verified') == 'no' ? 'selected' : '' }}>Não
-                                                </option>
-                                            </select>
+                                                    <option value="no"
+                                                        {{ request('verified') == 'no' ? 'selected' : '' }}>Não
+                                                    </option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">Limpar</a>
-                                    <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
-                                </div>
-                            </form>
+                                    <div class="modal-footer">
+                                        <a href="{{ route('admin.users.index') }}"
+                                            class="btn btn-outline-secondary">Limpar</a>
+                                        <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div>
-                @endsection
+            </main>
+        </div>
+    @endsection
