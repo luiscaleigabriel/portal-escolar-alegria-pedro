@@ -87,7 +87,7 @@
 
     <div class="container d-flex align-items-center justify-content-center min-vh-100 py-4">
         <div class="pending-container animate-fade-in">
-            <div class="auth-card shadow-lg">
+            <div style="background-color: rgba(30, 143, 255, 0.411)" class="auth-card shadow-lg">
                 <div class="status-card">
                     <div class="status-icon">
                         <i class="lni lni-timer"></i>
@@ -101,7 +101,7 @@
                     </div>
 
                     @auth
-                    <div class="user-info">
+                    <div style="color: #272727" class="user-info">
                         <div class="info-item">
                             <span class="info-label">Nome:</span>
                             <span class="info-value">{{ auth()->user()->name }}</span>
@@ -137,7 +137,7 @@
                         <p class="small mb-0">
                             <i class="lni lni-envelope"></i>
                             admin@alegriapedro.edu.ao
-                        </p>    
+                        </p>
                         <p class="small mb-0">
                             <i class="lni lni-phone"></i>
                             +244 222 000 000
