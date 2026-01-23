@@ -1,6 +1,7 @@
 @extends('layouts.app')
+@section('title', 'Administrativo - Portal Alegria')
 @section('cssjs')
-@vite(['resources/css/admin.css', 'resources/js/app.js'])
+    @vite(['resources/css/admin.css', 'resources/js/app.js'])
 @endsection
 @section('content')
     <div class="admin-wrapper">
@@ -181,9 +182,11 @@
                             <div class="card-header">
                                 <h3 class="card-title">Usuários Recentes</h3>
                                 <div class="card-actions">
-                                    <button class="btn btn-sm btn-ip-outline">
-                                        Ver Todos
-                                    </button>
+                                    <a href="{{ route('admin.users.index') }}">
+                                        <button class="btn btn-sm btn-ip-outline">
+                                            Ver Todos
+                                        </button>
+                                    </a>
                                 </div>
                             </div>
 

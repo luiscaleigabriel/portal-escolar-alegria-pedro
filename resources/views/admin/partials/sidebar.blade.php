@@ -13,7 +13,7 @@
         <div class="nav-group">
             <div class="nav-group-title">Principal</div>
             <div class="nav-item">
-                <a href="#" class="nav-link active">
+                <a href="{{ route('dashboard') }}" class="nav-link active">
                     <i class="fas fa-tachometer-alt nav-icon"></i>
                     <span>Dashboard</span>
                 </a>
@@ -29,7 +29,7 @@
         <div class="nav-group">
             <div class="nav-group-title">Gestão</div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.users.index') }}" class="nav-link">
                     <i class="fas fa-users nav-icon"></i>
                     <span>Usuários</span>
                     <span class="nav-badge">{{ $stats['pending_users'] ?? 0 }}</span>

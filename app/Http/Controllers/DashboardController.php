@@ -33,7 +33,7 @@ class DashboardController extends Controller
             return $this->adminDashboard();
         }
 
-        // Verificar se o usuário está aprovado (redundante com middleware, mas seguro)
+        // Verificar se o usuário está aprovado (redundante com middleware, mas uma segurança extra)
         if (!$user->isApproved()) {
             return redirect()->route('pending-approval');
         }
@@ -80,34 +80,11 @@ class DashboardController extends Controller
             abort(403, 'Acesso não autorizado ao painel administrativo.');
         }
 
-        $stats = [
-            'pending_users' => User::where('status', 'pending')->count(),
-            'total_users' => User::count(),
-            'total_students' => Student::count(),
-            'total_teachers' => Teacher::count(),
-            'total_turmas' => Turma::count(),
-            'recent_registrations' => User::with('roles')
-                ->latest()
-                ->take(5)
-                ->get(),
-            'approved' => User::where('status', 'approved')->count(),
-            'rejected' => User::where('status', 'rejected')->count(),
-            'suspended' => User::where('status', 'suspended')->count(),
-            'by_role' => [
-                'student' => User::whereHas('roles', fn($q) => $q->where('name', 'student'))->count(),
-                'teacher' => User::whereHas('roles', fn($q) => $q->where('name', 'teacher'))->count(),
-                'guardian' => User::whereHas('roles', fn($q) => $q->where('name', 'guardian'))->count(),
-                'admin' => User::whereHas('roles', fn($q) => $q->where('name', 'admin'))->count(),
-                'director' => User::whereHas('roles', fn($q) => $q->where('name', 'director'))->count(),
-            ]
-        ];
+        $stats = $this->getStats();
 
         return view('admin.index', ['stats' => $stats]);
-        // Se a view admin.index não existir, redirecionar para dashboard.admin
+        // Se a view admin.index não existir,
         if (view()->exists('admin.index')) {
-            return view('admin.index', ['stats' => $stats]);
-            echo "aaaa";
-        } elseif (view()->exists('dashboard.admin')) {
             return view('admin.index', ['stats' => $stats]);
         } else {
             // Fallback básico
@@ -157,7 +134,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get(),
 
-            // Próximas atividades (simplificado)
+            // Próximas atividades
             'upcoming_activities' => [],
         ];
 
@@ -167,7 +144,6 @@ class DashboardController extends Controller
     private function getPendingGradesCount($teacher)
     {
         // Lógica para contar notas pendentes de lançamento
-        // Aqui você pode implementar sua lógica específica
         // Exemplo: contar alunos sem nota em avaliações recentes
 
         return 0; // Placeholder
@@ -176,9 +152,31 @@ class DashboardController extends Controller
     private function getPendingAbsencesCount($teacher)
     {
         // Lógica para contar faltas pendentes de registro
-        // Aqui você pode implementar sua lógica específica
 
         return 0; // Placeholder
+    }
+
+    private function getStats()
+    {
+        return [
+            'pending_users' => User::where('status', 'pending')->count(),
+            'total_users' => User::count(),
+            'total_students' => Student::count(),
+            'total_teachers' => Teacher::count(),
+            'total_turmas' => Turma::count(),
+            'approved' => User::where('status', 'approved')->count(),
+            'pending' => User::where('status', 'pending')->count(),
+            'rejected' => User::where('status', 'rejected')->count(),
+            'suspended' => User::where('status', 'suspended')->count(),
+            'recent_registrations' => User::with('roles')->latest()->take(10)->get(),
+            'by_role' => [
+                'student' => User::whereHas('roles', fn($q) => $q->where('name', 'student'))->count(),
+                'teacher' => User::whereHas('roles', fn($q) => $q->where('name', 'teacher'))->count(),
+                'guardian' => User::whereHas('roles', fn($q) => $q->where('name', 'guardian'))->count(),
+                'admin' => User::whereHas('roles', fn($q) => $q->where('name', 'admin'))->count(),
+                'director' => User::whereHas('roles', fn($q) => $q->where('name', 'director'))->count(),
+            ]
+        ];
     }
 
     private function studentDashboard($user)

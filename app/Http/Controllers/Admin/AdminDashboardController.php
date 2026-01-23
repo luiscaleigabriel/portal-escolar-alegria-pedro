@@ -22,7 +22,6 @@ class AdminDashboardController extends Controller
 
         return view('admin.index', compact('stats'));
     }
-
     public function stats()
     {
         $stats = $this->getStats();
