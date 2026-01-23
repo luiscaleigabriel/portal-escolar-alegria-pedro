@@ -17,7 +17,7 @@ return new class extends Migration
             $table->year('school_year');
             $table->string('grade_level');
             $table->integer('capacity');
-            $table->boolean('status')->default(true);
+            $table->set('status', ['active', 'inactive']);
             $table->text('description');
             $table->timestamps();
         });

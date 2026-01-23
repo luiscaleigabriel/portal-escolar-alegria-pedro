@@ -71,8 +71,9 @@ class UserController extends Controller
     {
         $roles = Role::whereNotIn('name', ['admin'])->get();
         $turmas = Turma::active()->get();
+        $stats = $this->getStats();
 
-        return view('admin.users.create', compact('roles', 'turmas'));
+        return view('admin.users.create', compact('roles', 'turmas', 'stats'));
     }
 
     /**
@@ -88,7 +89,6 @@ class UserController extends Controller
             'birth_date' => ['nullable', 'date'],
             'gender' => ['nullable', 'in:male,female,other,prefer_not_to_say'],
             'address' => ['nullable', 'string', 'max:500'],
-            'emergency_contact' => ['nullable', 'string', 'max:255'],
             'role' => ['required', 'exists:roles,name'],
             'status' => ['required', 'in:pending,approved'],
 
@@ -120,11 +120,9 @@ class UserController extends Controller
                 'birth_date' => $request->birth_date,
                 'gender' => $request->gender,
                 'address' => $request->address,
-                'emergency_contact' => $request->emergency_contact,
                 'status' => $request->status,
                 'email_verified_at' => $request->status === 'approved' ? now() : null,
                 'approved_at' => $request->status === 'approved' ? now() : null,
-                'approver_id' => $request->status === 'approved' ? auth()->id() : null,
             ]);
 
             // Atribui role
@@ -135,9 +133,9 @@ class UserController extends Controller
                 case 'student':
                     $profile = Student::create([
                         'user_id' => $user->id,
-                        'registration_number' => $request->registration_number,
-                        'identity_document' => $request->identity_document,
-                        'turma_id' => $request->turma_id,
+                        'registration_number' => $request->registration_number ?? rand(1, 100000),
+                        'identity_document' => $request->identity_document ?? null,
+                        'turma_id' => $request->turma_id ?? null,
                     ]);
                     break;
 
