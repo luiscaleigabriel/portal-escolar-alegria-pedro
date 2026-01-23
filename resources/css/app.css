@@ -16,7 +16,7 @@
     --ip-light-gold: #FDE68A;
     --ip-dark-bg: #0F172A;
     --ip-light-bg: #F8FAFC;
-    --ip-card-bg: #FFFFFF;
+    --ip-card-bg: #fff;
     --ip-success: #10B981;
     --ip-warning: #F59E0B;
     --ip-danger: #EF4444;
@@ -57,7 +57,7 @@
 body {
     font-family: var(--bs-font-sans-serif);
     background-color: var(--ip-light-bg);
-    color: #1F2937;
+    color: #fff;
     line-height: 1.5;
 }
 
@@ -818,8 +818,6 @@ body {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
 }
-
-/* resources/css/app.css ou arquivo de estilos do admin */
 
 /* Cards do painel admin */
 .ip-card {

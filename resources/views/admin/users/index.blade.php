@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('title', 'Gestão de Usuários')
 @section('cssjs')
     @vite(['resources/css/admin.css', 'resources/js/app.js'])

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -59,13 +61,9 @@ class User extends Authenticatable
         ];
     }
 
-    // Relacionamentos
-    public function approver()
-    {
-        return $this->belongsTo(User::class, 'approved_by');
-    }
-
-    // Escopos
+    /**
+     * Escopos para status
+     */
     public function scopePending($query)
     {
         return $query->where('status', 'pending');
@@ -81,7 +79,19 @@ class User extends Authenticatable
         return $query->where('status', 'rejected');
     }
 
-    // Métodos de verificação
+    public function scopeSuspended($query)
+    {
+        return $query->where('status', 'suspended');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', ['approved']);
+    }
+
+    /**
+     * Métodos de verificação de status
+     */
     public function isPending()
     {
         return $this->status === 'pending';
@@ -89,7 +99,7 @@ class User extends Authenticatable
 
     public function isApproved()
     {
-        return $this->status === 'approved' || $this->is_approved;
+        return $this->status === 'approved';
     }
 
     public function isRejected()
@@ -100,6 +110,60 @@ class User extends Authenticatable
     public function isSuspended()
     {
         return $this->status === 'suspended';
+    }
+
+    /**
+     * Relações
+     */
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function suspendedBy()
+    {
+        return $this->belongsTo(User::class, 'suspended_by');
+    }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
+    public function guardian()
+    {
+        return $this->hasOne(Guardian::class);
+    }
+
+     /**
+     * Acessor para idade
+     */
+    public function getAgeAttribute()
+    {
+        if ($this->birth_date) {
+            return Carbon::parse($this->birth_date)->age;
+        }
+        return null;
+    }
+
+    /**
+     * Acessor para perfil específico
+     */
+    public function getProfileAttribute()
+    {
+        if ($this->hasRole('student')) {
+            return $this->student;
+        } elseif ($this->hasRole('teacher')) {
+            return $this->teacher;
+        } elseif ($this->hasRole('guardian')) {
+            return $this->guardian;
+        }
+        return null;
     }
 
     // Métodos de ação

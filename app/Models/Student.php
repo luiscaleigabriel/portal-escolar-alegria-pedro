@@ -20,8 +20,10 @@ class Student extends Model
         return $this->belongsTo(Turma::class);
     }
 
-    public function guardians() {
-        return $this->belongsToMany(Guardian::class);
+    public function guardians()
+    {
+        return $this->belongsToMany(Guardian::class, 'student_guardian')
+                    ->withTimestamps();
     }
 
     public function grades() {

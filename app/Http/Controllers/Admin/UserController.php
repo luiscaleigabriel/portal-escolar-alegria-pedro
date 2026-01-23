@@ -179,6 +179,8 @@ class UserController extends Controller
     {
         $user->load('roles', 'approver');
 
+        $stats = $this->getStats();
+
         // Carrega perfil específico
         $profile = null;
         if ($user->hasRole('student')) {
@@ -189,7 +191,7 @@ class UserController extends Controller
             $profile = Guardian::with('students.user', 'students.turma')->where('user_id', $user->id)->first();
         }
 
-        return view('admin.users.show', compact('user', 'profile'));
+        return view('admin.users.show', compact('user', 'profile', 'stats'));
     }
 
     /**
