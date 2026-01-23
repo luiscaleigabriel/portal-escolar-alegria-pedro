@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\User;
 use App\Models\Turma;
 use App\Models\Guardian;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +29,7 @@ class StudentController extends Controller
             $search = $request->search;
             $query->whereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             })->orWhere('registration_number', 'like', "%{$search}%");
         }
 
@@ -42,8 +43,9 @@ class StudentController extends Controller
 
         $students = $query->paginate(20);
         $turmas = Turma::all();
+        $stats = $this->getStats();
 
-        return view('admin.students.index', compact('students', 'turmas'));
+        return view('admin.students.index', compact('students', 'turmas', 'stats'));
     }
 
     /**
@@ -53,8 +55,9 @@ class StudentController extends Controller
     {
         $turmas = Turma::where('status', 'active')->get();
         $guardians = Guardian::with('user')->get();
+        $stats = $this->getStats();
 
-        return view('admin.students.create', compact('turmas', 'guardians'));
+        return view('admin.students.create', compact('turmas', 'guardians', 'stats'));
     }
 
     /**
@@ -70,7 +73,6 @@ class StudentController extends Controller
             'birth_date' => 'nullable|date',
             'gender' => 'nullable|in:male,female,other,prefer_not_to_say',
             'address' => 'nullable|string|max:500',
-            'emergency_contact' => 'nullable|string|max:255',
 
             // Dados específicos do aluno
             'registration_number' => 'required|string|max:50|unique:students',
@@ -100,7 +102,6 @@ class StudentController extends Controller
                 'status' => 'approved',
                 'email_verified_at' => now(),
                 'approved_at' => now(),
-                'approver_id' => auth()->id(),
             ]);
 
             // Atribui role de estudante
@@ -114,7 +115,6 @@ class StudentController extends Controller
                 'turma_id' => $request->turma_id,
                 'enrollment_date' => $request->enrollment_date,
                 'status' => $request->status,
-                'notes' => $request->notes,
             ]);
 
             // Vincula responsáveis
@@ -126,7 +126,6 @@ class StudentController extends Controller
 
             return redirect()->route('admin.students.show', $student)
                 ->with('success', 'Aluno criado com sucesso!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -141,8 +140,10 @@ class StudentController extends Controller
     public function show(Student $student)
     {
         $student->load(['user', 'turma', 'guardians.user', 'grades.subject']);
+        $guardians = Guardian::all();
+        $stats = $this->getStats();
 
-        return view('admin.students.show', compact('student'));
+        return view('admin.students.show', compact('student', 'guardians', 'stats'));
     }
 
     /**
@@ -153,8 +154,9 @@ class StudentController extends Controller
         $student->load(['user', 'guardians']);
         $turmas = Turma::where('status', 'active')->get();
         $guardians = Guardian::with('user')->get();
+        $stats = $this->getStats();
 
-        return view('admin.students.edit', compact('student', 'turmas', 'guardians'));
+        return view('admin.students.edit', compact('student', 'turmas', 'guardians', 'stats'));
     }
 
     /**
@@ -225,7 +227,6 @@ class StudentController extends Controller
 
             return redirect()->route('admin.students.show', $student)
                 ->with('success', 'Aluno atualizado com sucesso!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -255,7 +256,6 @@ class StudentController extends Controller
 
             return redirect()->route('admin.students.index')
                 ->with('success', 'Aluno removido com sucesso!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -317,7 +317,7 @@ class StudentController extends Controller
 
             DB::commit();
 
-            $message = match($request->action) {
+            $message = match ($request->action) {
                 'activate' => 'Alunos ativados com sucesso!',
                 'inactivate' => 'Alunos inativados com sucesso!',
                 'change_turma' => 'Turma alterada com sucesso!',
@@ -325,11 +325,63 @@ class StudentController extends Controller
             };
 
             return redirect()->back()->with('success', $message);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()
                 ->with('error', 'Erro ao processar ação em massa: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Vincula responsável ao aluno
+     */
+    public function attachGuardian(Request $request, Student $student)
+    {
+        $request->validate([
+            'guardian_id' => 'required|exists:guardians,id',
+            'relationship' => 'nullable|string|max:100',
+        ]);
+
+        $student->guardians()->attach($request->guardian_id, [
+            'relationship' => $request->relationship
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Responsável vinculado com sucesso!');
+    }
+
+    /**
+     * Remove vínculo com responsável
+     */
+    public function detachGuardian(Student $student, Guardian $guardian)
+    {
+        $student->guardians()->detach($guardian->id);
+
+        return redirect()->back()
+            ->with('success', 'Responsável removido com sucesso!');
+    }
+
+    private function getStats()
+    {
+        return [
+            'total' => User::count(),
+            'pending_users' => User::where('status', 'pending')->count(),
+            'total_users' => User::count(),
+            'total_students' => Student::count(),
+            'total_teachers' => Teacher::count(),
+            'total_turmas' => Turma::count(),
+            'approved' => User::where('status', 'approved')->count(),
+            'pending' => User::where('status', 'pending')->count(),
+            'rejected' => User::where('status', 'rejected')->count(),
+            'suspended' => User::where('status', 'suspended')->count(),
+            'recent_registrations' => User::with('roles')->latest()->take(10)->get(),
+            'by_role' => [
+                'student' => User::whereHas('roles', fn($q) => $q->where('name', 'student'))->count(),
+                'teacher' => User::whereHas('roles', fn($q) => $q->where('name', 'teacher'))->count(),
+                'guardian' => User::whereHas('roles', fn($q) => $q->where('name', 'guardian'))->count(),
+                'admin' => User::whereHas('roles', fn($q) => $q->where('name', 'admin'))->count(),
+                'director' => User::whereHas('roles', fn($q) => $q->where('name', 'director'))->count(),
+            ]
+        ];
     }
 }

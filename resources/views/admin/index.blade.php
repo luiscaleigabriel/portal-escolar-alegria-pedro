@@ -11,63 +11,7 @@
         <!-- Conteúdo Principal -->
         <main class="admin-main">
             <!-- Header -->
-            <header class="admin-header">
-                <div class="header-left">
-                    <button class="toggle-sidebar" id="toggleSidebar">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="breadcrumb">
-                        <span class="text-muted">Admin</span>
-                        <span class="mx-2">/</span>
-                        <span class="fw-medium">Dashboard</span>
-                    </div>
-                </div>
-
-                <div class="header-right">
-                    <button class="btn btn-sm btn-outline-secondary" id="fullscreenBtn">
-                        <i class="fas fa-expand"></i>
-                    </button>
-
-                    <div class="notification-indicator">
-                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge"></span>
-                        </button>
-                    </div>
-
-                    <div class="dropdown">
-                        <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown">
-                            <div class="user-avatar">
-                                {{ substr(auth()->user()->name, 0, 1) }}
-                            </div>
-                            <div class="user-info">
-                                <h6>{{ auth()->user()->name }}</h6>
-                                <small>Administrador</small>
-                            </div>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-user me-2"></i>
-                                Perfil
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cog me-2"></i>
-                                Configurações
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt me-2"></i>
-                                Sair
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            @include('admin.partials.header')
 
             <!-- Conteúdo -->
             <div class="admin-content">

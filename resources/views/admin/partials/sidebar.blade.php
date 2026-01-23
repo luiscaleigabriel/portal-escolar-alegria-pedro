@@ -36,7 +36,7 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link">
+                <a href="{{ route('admin.students.index') }}" class="nav-link">
                     <i class="fas fa-user-graduate nav-icon"></i>
                     <span>Alunos</span>
                 </a>

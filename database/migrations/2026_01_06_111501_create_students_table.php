@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('registration_number')->unique();
             $table->foreignId('turma_id')->nullable()->constrained();
             $table->string('identity_document')->nullable()->unique();
+            $table->set('status', ['active', 'inactive','graduated', 'transferred'])->default('inactive');
+            $table->datetimes('enrollment_date');
             $table->timestamps();
         });
     }

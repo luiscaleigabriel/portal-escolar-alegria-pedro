@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\StudentController as AdminStudentController;
 use App\Http\Controllers\Admin\UserApprovalController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -100,7 +101,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|director
     Route::get('/stats', [AdminDashboardController::class, 'stats'])
         ->name('stats');
 
-    // Gestão de Usuários (rotas completas)
+    // Gestão de Usuários
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -110,7 +111,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|director
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
 
-        // Aprovação de usuários (compatível com UserApprovalController se ainda existir)
+        // Aprovação de usuários
         Route::get('/pending', [UserApprovalController::class, 'pending'])->name('pending');
         Route::post('/{user}/approve', [UserController::class, 'approve'])->name('approve');
         Route::post('/{user}/reject', [UserController::class, 'reject'])->name('reject');
@@ -121,6 +122,26 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|director
         Route::post('/bulk-actions', [UserController::class, 'bulkActions'])->name('bulk-actions');
         Route::post('/import', [UserController::class, 'import'])->name('import');
         Route::get('/export', [UserController::class, 'export'])->name('export');
+    });
+
+    // Gestão de Estudantes
+    Route::prefix('students')->name('students.')->group(function () {
+        Route::get('/', [AdminStudentController::class, 'index'])->name('index');
+        Route::get('/create', [AdminStudentController::class, 'create'])->name('create');
+        Route::post('/', [AdminStudentController::class, 'store'])->name('store');
+        Route::get('/{student}', [AdminStudentController::class, 'show'])->name('show');
+        Route::get('/{student}/edit', [AdminStudentController::class, 'edit'])->name('edit');
+        Route::put('/{student}', [AdminStudentController::class, 'update'])->name('update');
+        Route::delete('/{student}', [AdminStudentController::class, 'destroy'])->name('destroy');
+
+        // Ações em massa
+        Route::post('/bulk-actions', [StudentController::class, 'bulkActions'])->name('bulk-actions');
+        Route::post('/import', [StudentController::class, 'import'])->name('import');
+        Route::get('/export', [StudentController::class, 'export'])->name('export');
+
+        // Gestão de responsáveis
+        Route::post('/{student}/guardian', [StudentController::class, 'attachGuardian'])->name('guardian.attach');
+        Route::delete('/{student}/guardian/{guardian}', [StudentController::class, 'detachGuardian'])->name('guardian.detach');
     });
 
     // Chat admin (com funcionalidades extras)
@@ -136,7 +157,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|director
     });
 
     // CRUD completo de todas as entidades
-    Route::resource('students', StudentController::class)->except(['show']);
     Route::resource('teachers', TeacherController::class)->except(['show']);
     Route::resource('turmas', TurmaController::class)->except(['show']);
     Route::resource('subjects', SubjectController::class)->except(['show']);

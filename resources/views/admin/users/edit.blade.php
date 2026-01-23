@@ -8,6 +8,8 @@
         @include('admin.partials.sidebar')
         <!-- Conteúdo Principal -->
         <main class="admin-main">
+             <!-- Header -->
+            @include('admin.partials.header')
             <div class="container-fluid px-4">
                 <!-- Cabeçalho -->
                 <div class="d-flex justify-content-between align-items-center mb-4">

@@ -378,9 +378,10 @@ body {
 }
 
 .admin-main {
+    width: calc(100dvw - --ip-sidebar-width);
     flex: 1;
     margin-left: var(--ip-sidebar-width);
-    min-height: 100vh;
+    min-height: 100dvh;
     background: #f5f7fb;
 }
 

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Gestão de Usuários')
+@section('title', 'Gestão de Alunos')
 @section('cssjs')
     @vite(['resources/css/admin.css', 'resources/js/app.js'])
 @endsection
@@ -10,23 +10,18 @@
         <main class="admin-main">
             <!-- Header -->
             @include('admin.partials.header')
-            
+
             <div class="container-fluid px-4">
                 <!-- Cabeçalho -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Usuários</li>
-                            </ol>
-                        </nav>
-                        <h1 class="h3 mb-0 text-gray-800">Gestão de Usuários</h1>
+                        <h1 class="h3 mb-0 text-gray-800">Gestão de Alunos</h1>
+                        <p class="text-muted mb-0">Gerencie todos os alunos do sistema</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                        <a href="{{ route('admin.students.create') }}" class="btn btn-primary">
                             <i class="lni lni-plus me-1"></i>
-                            Novo Usuário
+                            Novo Aluno
                         </a>
                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"
                             data-bs-target="#filterModal">
@@ -40,11 +35,12 @@
                                 Exportar
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('admin.users.export') }}?format=csv">CSV</a>
+                                <li><a class="dropdown-item" href="{{ route('admin.students.export') }}?format=csv">CSV</a>
                                 </li>
-                                <li><a class="dropdown-item" href="{{ route('admin.users.export') }}?format=excel">Excel</a>
+                                <li><a class="dropdown-item"
+                                        href="{{ route('admin.students.export') }}?format=excel">Excel</a>
                                 </li>
-                                <li><a class="dropdown-item" href="{{ route('admin.users.export') }}?format=pdf">PDF</a>
+                                <li><a class="dropdown-item" href="{{ route('admin.students.export') }}?format=pdf">PDF</a>
                                 </li>
                             </ul>
                         </div>
@@ -58,26 +54,11 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h6 class="text-muted fw-normal">Total de Usuários</h6>
-                                        <h3 class="mb-0">{{ $stats['total'] }}</h3>
+                                        <h6 class="text-muted fw-normal">Total de Alunos</h6>
+                                        <h3 class="mb-0">{{ $students->total() }}</h3>
                                     </div>
                                     <div class="align-self-center">
                                         <i class="lni lni-users display-4 text-primary"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-md-6">
-                        <div class="card ip-card border-start border-warning border-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="text-muted fw-normal">Pendentes</h6>
-                                        <h3 class="mb-0">{{ $stats['pending'] }}</h3>
-                                    </div>
-                                    <div class="align-self-center">
-                                        <i class="lni lni-timer display-4 text-warning"></i>
                                     </div>
                                 </div>
                             </div>
@@ -88,8 +69,8 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h6 class="text-muted fw-normal">Aprovados</h6>
-                                        <h3 class="mb-0">{{ $stats['approved'] }}</h3>
+                                        <h6 class="text-muted fw-normal">Ativos</h6>
+                                        <h3 class="mb-0">{{ $students->where('status', 'active')->count() }}</h3>
                                     </div>
                                     <div class="align-self-center">
                                         <i class="lni lni-checkmark-circle display-4 text-success"></i>
@@ -99,15 +80,30 @@
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
-                        <div class="card ip-card border-start border-danger border-3">
+                        <div class="card ip-card border-start border-warning border-3">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <h6 class="text-muted fw-normal">Rejeitados</h6>
-                                        <h3 class="mb-0">{{ $stats['rejected'] }}</h3>
+                                        <h6 class="text-muted fw-normal">Inativos</h6>
+                                        <h3 class="mb-0">{{ $students->where('status', 'inactive')->count() }}</h3>
                                     </div>
                                     <div class="align-self-center">
-                                        <i class="lni lni-cross-circle display-4 text-danger"></i>
+                                        <i class="lni lni-ban display-4 text-warning"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card ip-card border-start border-info border-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted fw-normal">Formados</h6>
+                                        <h3 class="mb-0">{{ $students->where('status', 'graduated')->count() }}</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="lni lni-graduation display-4 text-info"></i>
                                     </div>
                                 </div>
                             </div>
@@ -115,88 +111,84 @@
                     </div>
                 </div>
 
-                <!-- Tabela de Usuários -->
+                <!-- Tabela de Alunos -->
                 <div class="card ip-card">
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Usuário</th>
-                                        <th>Perfil</th>
+                                        <th width="50">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="selectAllTable">
+                                            </div>
+                                        </th>
+                                        <th>Aluno</th>
+                                        <th>Matrícula</th>
+                                        <th>Turma</th>
                                         <th>Status</th>
-                                        <th>Verificado</th>
-                                        <th>Registro</th>
+                                        <th>Data de Matrícula</th>
                                         <th class="text-end">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($users as $user)
+                                    @forelse($students as $student)
                                         <tr>
                                             <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input student-checkbox" type="checkbox"
+                                                        name="students[]" value="{{ $student->id }}">
+                                                </div>
+                                            </td>
+                                            <td>
                                                 <div class="d-flex align-items-center">
-                                                    @php
-                                                        $role = $user->roles->first();
-                                                        $roleColors = [
-                                                            'student' => 'primary',
-                                                            'teacher' => 'warning',
-                                                            'guardian' => 'info',
-                                                            'admin' => 'danger',
-                                                            'director' => 'success',
-                                                        ];
-                                                    @endphp
                                                     <div class="avatar-sm me-3">
                                                         <div
-                                                            class="avatar-title bg-{{ $roleColors[$role->name] ?? 'secondary' }}-subtle
-                                        text-{{ $roleColors[$role->name] ?? 'secondary' }} rounded-circle">
+                                                            class="avatar-title bg-primary-subtle text-primary rounded-circle">
                                                             <i class="lni lni-user"></i>
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <h6 class="mb-1">{{ $user->name }}</h6>
-                                                        <small class="text-muted">{{ $user->email }}</small>
+                                                        <h6 class="mb-1">{{ $student->user->name }}</h6>
+                                                        <small class="text-muted">{{ $student->user->email }}</small>
+                                                        @if ($student->user->phone)
+                                                            <small
+                                                                class="text-muted d-block">{{ $student->user->phone }}</small>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                @foreach ($user->roles as $role)
-                                                    <span class="badge bg-{{ $roleColors[$role->name] ?? 'secondary' }}">
-                                                        {{ ucfirst($role->name) }}
-                                                    </span>
-                                                @endforeach
+                                                <span class="badge bg-secondary">{{ $student->registration_number }}</span>
                                             </td>
                                             <td>
-                                                @switch($user->status)
-                                                    @case('pending')
-                                                        <span class="badge bg-warning">Pendente</span>
+                                                @if ($student->turma)
+                                                    <span class="badge bg-primary">{{ $student->turma->name }}</span>
+                                                @else
+                                                    <span class="badge bg-warning">Sem turma</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @switch($student->status)
+                                                    @case('active')
+                                                        <span class="badge bg-success">Ativo</span>
                                                     @break
 
-                                                    @case('approved')
-                                                        <span class="badge bg-success">Aprovado</span>
+                                                    @case('inactive')
+                                                        <span class="badge bg-warning">Inativo</span>
                                                     @break
 
-                                                    @case('rejected')
-                                                        <span class="badge bg-danger">Rejeitado</span>
+                                                    @case('graduated')
+                                                        <span class="badge bg-info">Formado</span>
                                                     @break
 
-                                                    @case('suspended')
-                                                        <span class="badge bg-secondary">Suspenso</span>
+                                                    @case('transferred')
+                                                        <span class="badge bg-secondary">Transferido</span>
                                                     @break
                                                 @endswitch
                                             </td>
                                             <td>
-                                                @if ($user->email_verified_at)
-                                                    <span class="badge bg-success-subtle text-success">
-                                                        <i class="lni lni-checkmark"></i> Sim
-                                                    </span>
-                                                @else
-                                                    <span class="badge bg-warning-subtle text-warning">
-                                                        <i class="lni lni-warning"></i> Não
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <small>{{ $user->created_at->format('d/m/Y') }}</small>
+                                                <small>{{ $student->enrollment_date }}</small>
                                             </td>
                                             <td class="text-end">
                                                 <div class="dropdown">
@@ -207,42 +199,45 @@
                                                     <ul class="dropdown-menu">
                                                         <li>
                                                             <a class="dropdown-item"
-                                                                href="{{ route('admin.users.show', $user) }}">
+                                                                href="{{ route('admin.students.show', $student) }}">
                                                                 <i class="lni lni-eye me-2"></i> Ver Detalhes
                                                             </a>
                                                         </li>
                                                         <li>
                                                             <a class="dropdown-item"
-                                                                href="{{ route('admin.users.edit', $user) }}">
+                                                                href="{{ route('admin.students.edit', $student) }}">
                                                                 <i class="lni lni-pencil me-2"></i> Editar
                                                             </a>
                                                         </li>
                                                         <li>
                                                             <hr class="dropdown-divider">
                                                         </li>
-                                                        @if ($user->isPending())
+                                                        @if ($student->status === 'active')
                                                             <li>
-                                                                <form action="{{ route('admin.users.approve', $user) }}"
+                                                                <form
+                                                                    action="{{ route('admin.students.update', $student) }}"
                                                                     method="POST" class="d-inline">
                                                                     @csrf
+                                                                    @method('PUT')
+                                                                    <input type="hidden" name="status"
+                                                                        value="inactive">
                                                                     <button type="submit"
-                                                                        class="dropdown-item text-success"
-                                                                        onclick="return confirm('Aprovar este usuário?')">
-                                                                        <i class="lni lni-checkmark-circle me-1"></i>
-                                                                        Aprovar
+                                                                        class="dropdown-item text-warning">
+                                                                        <i class="lni lni-ban me-2"></i> Inativar
                                                                     </button>
                                                                 </form>
                                                             </li>
-                                                        @elseif($user->isSuspended())
+                                                        @else
                                                             <li>
-                                                                <form action="{{ route('admin.users.activate', $user) }}"
+                                                                <form
+                                                                    action="{{ route('admin.students.update', $student) }}"
                                                                     method="POST" class="d-inline">
                                                                     @csrf
+                                                                    @method('PUT')
+                                                                    <input type="hidden" name="status" value="active">
                                                                     <button type="submit"
-                                                                        class="dropdown-item text-success"
-                                                                        onclick="return confirm('Aprovar este usuário?')">
-                                                                        <i class="lni lni-checkmark me-2"></i>
-                                                                        Ativar
+                                                                        class="dropdown-item text-success">
+                                                                        <i class="lni lni-checkmark me-2"></i> Ativar
                                                                     </button>
                                                                 </form>
                                                             </li>
@@ -250,7 +245,7 @@
                                                         <li>
                                                             <button class="dropdown-item text-danger"
                                                                 data-bs-toggle="modal"
-                                                                data-bs-target="#deleteModal{{ $user->id }}">
+                                                                data-bs-target="#deleteModal{{ $student->id }}">
                                                                 <i class="lni lni-trash me-2"></i> Remover
                                                             </button>
                                                         </li>
@@ -260,27 +255,26 @@
                                         </tr>
 
                                         <!-- Modal de Remoção -->
-                                        <div class="modal fade" id="deleteModal{{ $user->id }}" tabindex="-1">
+                                        <div class="modal fade" id="deleteModal{{ $student->id }}" tabindex="-1">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
-                                                    <form action="{{ route('admin.users.destroy', $user) }}"
+                                                    <form action="{{ route('admin.students.destroy', $student) }}"
                                                         method="POST">
                                                         @csrf
                                                         @method('DELETE')
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title">Remover Usuário</h5>
+                                                            <h5 class="modal-title">Remover Aluno</h5>
                                                             <button type="button" class="btn-close"
                                                                 data-bs-dismiss="modal"></button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <p>Tem certeza que deseja remover
-                                                                <strong>{{ $user->name }}</strong>?
+                                                                <strong>{{ $student->user->name }}</strong>?
                                                             </p>
                                                             <div class="alert alert-danger">
                                                                 <i class="lni lni-warning me-2"></i>
                                                                 Esta ação não pode ser desfeita. Todos os dados relacionados
-                                                                serão
-                                                                removidos.
+                                                                serão removidos.
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">
@@ -298,28 +292,27 @@
                                                 <td colspan="7" class="text-center py-4">
                                                     <div class="text-muted">
                                                         <i class="lni lni-users display-4"></i>
-                                                        <p class="mt-2">Nenhum usuário encontrado</p>
+                                                        <p class="mt-2">Nenhum aluno encontrado</p>
                                                     </div>
                                                 </td>
                                             </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
-
-                                <!-- Paginação -->
-                                @if ($users->hasPages())
-                                    <div class="d-flex justify-content-between align-items-center mt-3">
-                                        <div class="text-muted">
-                                            Mostrando {{ $users->firstItem() }} a {{ $users->lastItem() }} de
-                                            {{ $users->total() }}
-                                            resultados
-                                        </div>
-                                        <div>
-                                            {{ $users->links() }}
-                                        </div>
-                                    </div>
-                                @endif
                             </div>
+
+                            <!-- Paginação -->
+                            @if ($students->hasPages())
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div class="text-muted">
+                                        Mostrando {{ $students->firstItem() }} a {{ $students->lastItem() }} de
+                                        {{ $students->total() }} resultados
+                                    </div>
+                                    <div>
+                                        {{ $students->links() }}
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -327,9 +320,9 @@
                     <div class="modal fade" id="filterModal" tabindex="-1">
                         <div class="modal-dialog">
                             <div class="modal-content">
-                                <form action="{{ route('admin.users.index') }}" method="GET">
+                                <form action="{{ route('admin.students.index') }}" method="GET">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Filtrar Usuários</h5>
+                                        <h5 class="modal-title">Filtrar Alunos</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
@@ -337,55 +330,43 @@
                                             <div class="col-12">
                                                 <label class="form-label">Buscar</label>
                                                 <input type="text" class="form-control" name="search"
-                                                    value="{{ request('search') }}" placeholder="Nome, email ou telefone...">
+                                                    value="{{ request('search') }}"
+                                                    placeholder="Nome, email ou matrícula...">
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Status</label>
                                                 <select class="form-select" name="status">
                                                     <option value="">Todos</option>
-                                                    <option value="pending"
-                                                        {{ request('status') == 'pending' ? 'selected' : '' }}>
-                                                        Pendentes</option>
-                                                    <option value="approved"
-                                                        {{ request('status') == 'approved' ? 'selected' : '' }}>
-                                                        Aprovados</option>
-                                                    <option value="rejected"
-                                                        {{ request('status') == 'rejected' ? 'selected' : '' }}>
-                                                        Rejeitados</option>
-                                                    <option value="suspended"
-                                                        {{ request('status') == 'suspended' ? 'selected' : '' }}>
-                                                        Suspensos</option>
+                                                    <option value="active"
+                                                        {{ request('status') == 'active' ? 'selected' : '' }}>
+                                                        Ativos</option>
+                                                    <option value="inactive"
+                                                        {{ request('status') == 'inactive' ? 'selected' : '' }}>Inativos
+                                                    </option>
+                                                    <option value="graduated"
+                                                        {{ request('status') == 'graduated' ? 'selected' : '' }}>Formados
+                                                    </option>
+                                                    <option value="transferred"
+                                                        {{ request('status') == 'transferred' ? 'selected' : '' }}>Transferidos
+                                                    </option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label">Perfil</label>
-                                                <select class="form-select" name="role">
-                                                    <option value="">Todos</option>
-                                                    @foreach ($roles as $role)
-                                                        <option value="{{ $role->name }}"
-                                                            {{ request('role') == $role->name ? 'selected' : '' }}>
-                                                            {{ ucfirst($role->name) }}
+                                                <label class="form-label">Turma</label>
+                                                <select class="form-select" name="turma_id">
+                                                    <option value="">Todas</option>
+                                                    @foreach ($turmas as $turma)
+                                                        <option value="{{ $turma->id }}"
+                                                            {{ request('turma_id') == $turma->id ? 'selected' : '' }}>
+                                                            {{ $turma->name }}
                                                         </option>
                                                     @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-12">
-                                                <label class="form-label">Email Verificado</label>
-                                                <select class="form-select" name="verified">
-                                                    <option value="">Todos</option>
-                                                    <option value="yes"
-                                                        {{ request('verified') == 'yes' ? 'selected' : '' }}>
-                                                        Sim
-                                                    </option>
-                                                    <option value="no"
-                                                        {{ request('verified') == 'no' ? 'selected' : '' }}>Não
-                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <a href="{{ route('admin.users.index') }}"
+                                        <a href="{{ route('admin.students.index') }}"
                                             class="btn btn-outline-secondary">Limpar</a>
                                         <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
                                     </div>
@@ -393,6 +374,84 @@
                             </div>
                         </div>
                     </div>
+                </div>
             </main>
         </div>
     @endsection
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Controle de seleção
+                const selectAll = document.getElementById('selectAll');
+                const selectAllTable = document.getElementById('selectAllTable');
+                const checkboxes = document.querySelectorAll('.student-checkbox');
+                const selectedCount = document.getElementById('selectedCount');
+                const bulkAction = document.getElementById('bulkAction');
+                const turmaField = document.getElementById('turmaField');
+                const applyBulkAction = document.getElementById('applyBulkAction');
+
+                function updateSelectedCount() {
+                    const selected = document.querySelectorAll('.student-checkbox:checked').length;
+                    selectedCount.textContent = `${selected} selecionado(s)`;
+                }
+
+                function toggleTurmaField() {
+                    if (bulkAction.value === 'change_turma') {
+                        turmaField.classList.remove('d-none');
+                        turmaField.querySelector('select').required = true;
+                    } else {
+                        turmaField.classList.add('d-none');
+                        turmaField.querySelector('select').required = false;
+                    }
+                }
+
+                // Selecionar todos
+                selectAll?.addEventListener('change', function() {
+                    checkboxes.forEach(cb => cb.checked = this.checked);
+                    updateSelectedCount();
+                });
+
+                selectAllTable?.addEventListener('change', function() {
+                    checkboxes.forEach(cb => cb.checked = this.checked);
+                    updateSelectedCount();
+                });
+
+                // Atualizar contagem
+                checkboxes.forEach(cb => {
+                    cb.addEventListener('change', updateSelectedCount);
+                });
+
+                // Mostrar/ocultar campo de turma
+                bulkAction?.addEventListener('change', toggleTurmaField);
+
+                // Aplicar ação em massa
+                applyBulkAction?.addEventListener('click', function() {
+                    const selected = document.querySelectorAll('.student-checkbox:checked');
+                    if (selected.length === 0) {
+                        alert('Selecione pelo menos um aluno.');
+                        return;
+                    }
+
+                    if (!bulkAction.value) {
+                        alert('Selecione uma ação.');
+                        return;
+                    }
+
+                    if (bulkAction.value === 'change_turma' && !document.querySelector(
+                            'select[name="turma_id"]').value) {
+                        alert('Selecione uma turma.');
+                        return;
+                    }
+
+                    if (confirm(`Deseja ${bulkAction.value} ${selected.length} aluno(s)?`)) {
+                        document.getElementById('bulkForm').submit();
+                    }
+                });
+
+                // Inicializar
+                updateSelectedCount();
+                toggleTurmaField();
+            });
+        </script>
+    @endpush

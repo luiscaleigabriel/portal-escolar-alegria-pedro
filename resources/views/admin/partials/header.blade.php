@@ -25,7 +25,7 @@
             <div class="dropdown-menu dropdown-menu-end">
                 <h6 class="dropdown-header">Notificações</h6>
                 @if(isset($stats['pending_users']) && $stats['pending_users'] > 0)
-                <a class="dropdown-item" href="{{ route('admin.users.pending') }}">
+                <a class="dropdown-item" href="{{ route('admin.users.index') }}">
                     <i class="fas fa-users text-warning me-2"></i>
                     <span>{{ $stats['pending_users'] }} usuários pendentes</span>
                 </a>

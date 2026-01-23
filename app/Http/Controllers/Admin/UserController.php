@@ -516,7 +516,7 @@ class UserController extends Controller
             ->with('warning', 'Funcionalidade de exportação em desenvolvimento.');
     }
 
-     private function getStats()
+    private function getStats()
     {
         return [
             'total' => User::count(),
