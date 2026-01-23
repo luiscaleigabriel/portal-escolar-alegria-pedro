@@ -27,11 +27,14 @@
                             Voltar
                         </a>
                         @if ($user->isPending())
-                            <a href="{{ route('admin.users.approve', $user) }}" class="btn btn-success"
-                                onclick="return confirm('Aprovar este usuário?')">
-                                <i class="lni lni-checkmark-circle me-1"></i>
-                                Aprovar
-                            </a>
+                            <form action="{{ route('admin.users.approve', $user) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-success"
+                                    onclick="return confirm('Aprovar este usuário?')">
+                                    <i class="lni lni-checkmark-circle me-1"></i>
+                                    Aprovar
+                                </button>
+                            </form>
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                 data-bs-target="#rejectModal">
                                 <i class="lni lni-cross-circle me-1"></i>
@@ -363,11 +366,15 @@
 
                                     @if ($user->isPending())
                                         <div class="d-grid gap-2">
-                                            <a href="{{ route('admin.users.approve', $user) }}" class="btn btn-success"
-                                                onclick="return confirm('Aprovar este usuário?')">
-                                                <i class="lni lni-checkmark-circle me-1"></i>
-                                                Aprovar Usuário
-                                            </a>
+                                            <form action="{{ route('admin.users.approve', $user) }}" method="POST"
+                                                class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success"
+                                                    onclick="return confirm('Aprovar este usuário?')">
+                                                    <i class="lni lni-checkmark-circle me-1"></i>
+                                                    Aprovar
+                                                </button>
+                                            </form>
                                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                                 data-bs-target="#rejectModal">
                                                 <i class="lni lni-cross-circle me-1"></i>
@@ -376,7 +383,7 @@
                                         </div>
                                     @elseif($user->isApproved())
                                         <div class="d-grid gap-2">
-                                            @if ($user->hasRole('student') && !$profile->turma)
+                                            @if ($user->hasRole('student'))
                                                 <a href="#" class="btn btn-outline-primary">
                                                     <i class="lni lni-layers me-1"></i>
                                                     Atribuir Turma

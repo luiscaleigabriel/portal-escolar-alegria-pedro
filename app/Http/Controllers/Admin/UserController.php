@@ -202,6 +202,7 @@ class UserController extends Controller
         $user->load('roles');
         $roles = Role::whereNotIn('name', ['admin'])->get();
         $turmas = Turma::active()->get();
+        $stats = $this->getStats();
 
         // Carrega perfil específico
         $profile = null;
@@ -214,7 +215,7 @@ class UserController extends Controller
             $students = Student::with('user')->get();
         }
 
-        return view('admin.users.edit', compact('user', 'roles', 'turmas', 'profile', 'students'));
+        return view('admin.users.edit', compact('user', 'roles', 'turmas', 'profile', 'students', 'stats'));
     }
 
     /**

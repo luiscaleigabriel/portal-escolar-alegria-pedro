@@ -14,7 +14,11 @@ return new class extends Migration
         Schema::create('turmas', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->year('year');
+            $table->year('school_year');
+            $table->string('grade_level');
+            $table->integer('capacity');
+            $table->boolean('status')->default(true);
+            $table->text('description');
             $table->timestamps();
         });
     }

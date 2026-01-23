@@ -112,44 +112,6 @@
                     </div>
                 </div>
 
-                <!-- Barra de Ações -->
-                <div class="card ip-card mb-4">
-                    <div class="card-body">
-                        <form id="bulkForm" action="{{ route('admin.users.bulk-actions') }}" method="POST">
-                            @csrf
-                            <div class="row align-items-center">
-                                <div class="col-md-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="selectAll">
-                                        <label class="form-check-label" for="selectAll">
-                                            Selecionar Todos
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-5">
-                                    <select class="form-select" name="action" id="bulkAction" required>
-                                        <option value="">Ação em massa...</option>
-                                        <option value="approve">Aprovar Selecionados</option>
-                                        <option value="reject">Rejeitar Selecionados</option>
-                                        <option value="suspend">Suspender Selecionados</option>
-                                        <option value="delete">Remover Selecionados</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <button type="button" class="btn btn-primary" id="applyBulkAction">
-                                        <i class="lni lni-checkmark-circle me-1"></i>
-                                        Aplicar
-                                    </button>
-                                    <span id="selectedCount" class="ms-2 text-muted">0 selecionados</span>
-                                </div>
-                            </div>
-                            <div id="reasonField" class="mt-3 d-none">
-                                <textarea class="form-control" name="reason" rows="2" placeholder="Informe o motivo..."></textarea>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
                 <!-- Tabela de Usuários -->
                 <div class="card ip-card">
                     <div class="card-body">
@@ -157,11 +119,6 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th width="50">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="selectAllTable">
-                                            </div>
-                                        </th>
                                         <th>Usuário</th>
                                         <th>Perfil</th>
                                         <th>Status</th>
@@ -173,12 +130,6 @@
                                 <tbody>
                                     @forelse($users as $user)
                                         <tr>
-                                            <td>
-                                                <div class="form-check">
-                                                    <input class="form-check-input user-checkbox" type="checkbox"
-                                                        name="users[]" value="{{ $user->id }}">
-                                                </div>
-                                            </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     @php
@@ -268,34 +219,29 @@
                                                         </li>
                                                         @if ($user->isPending())
                                                             <li>
-                                                                <a class="dropdown-item text-success"
-                                                                    href="{{ route('admin.users.approve', $user) }}"
-                                                                    onclick="return confirm('Aprovar este usuário?')">
-                                                                    <i class="lni lni-checkmark-circle me-2"></i> Aprovar
-                                                                </a>
-                                                            </li>
-                                                            <li>
-                                                                <button class="dropdown-item text-danger"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#rejectModal{{ $user->id }}">
-                                                                    <i class="lni lni-cross-circle me-2"></i> Rejeitar
-                                                                </button>
-                                                            </li>
-                                                        @elseif($user->isApproved())
-                                                            <li>
-                                                                <button class="dropdown-item text-warning"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#suspendModal{{ $user->id }}">
-                                                                    <i class="lni lni-ban me-2"></i> Suspender
-                                                                </button>
+                                                                <form action="{{ route('admin.users.approve', $user) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-success"
+                                                                        onclick="return confirm('Aprovar este usuário?')">
+                                                                        <i class="lni lni-checkmark-circle me-1"></i>
+                                                                        Aprovar
+                                                                    </button>
+                                                                </form>
                                                             </li>
                                                         @elseif($user->isSuspended())
                                                             <li>
-                                                                <a class="dropdown-item text-success"
-                                                                    href="{{ route('admin.users.activate', $user) }}"
-                                                                    onclick="return confirm('Ativar este usuário?')">
-                                                                    <i class="lni lni-checkmark me-2"></i> Ativar
-                                                                </a>
+                                                                <form action="{{ route('admin.users.activate', $user) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    <button type="submit"
+                                                                        class="dropdown-item text-success"
+                                                                        onclick="return confirm('Aprovar este usuário?')">
+                                                                        <i class="lni lni-checkmark me-2"></i>
+                                                                        Ativar
+                                                                    </button>
+                                                                </form>
                                                             </li>
                                                         @endif
                                                         <li>
@@ -309,66 +255,6 @@
                                                 </div>
                                             </td>
                                         </tr>
-
-                                        <!-- Modal de Rejeição -->
-                                        <div class="modal fade" id="rejectModal{{ $user->id }}" tabindex="-1">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <form action="{{ route('admin.users.reject', $user) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Rejeitar Usuário</h5>
-                                                            <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Rejeitar <strong>{{ $user->name }}</strong>?</p>
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Motivo da Rejeição</label>
-                                                                <textarea class="form-control" name="reason" rows="3" required></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-bs-dismiss="modal">Cancelar</button>
-                                                            <button type="submit" class="btn btn-danger">Confirmar
-                                                                Rejeição</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Modal de Suspensão -->
-                                        <div class="modal fade" id="suspendModal{{ $user->id }}" tabindex="-1">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <form action="{{ route('admin.users.suspend', $user) }}"
-                                                        method="POST">
-                                                        @csrf
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Suspender Usuário</h5>
-                                                            <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Suspender <strong>{{ $user->name }}</strong>?</p>
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Motivo da Suspensão</label>
-                                                                <textarea class="form-control" name="reason" rows="3" required></textarea>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-bs-dismiss="modal">Cancelar</button>
-                                                            <button type="submit" class="btn btn-danger">Confirmar
-                                                                Suspensão</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <!-- Modal de Remoção -->
                                         <div class="modal fade" id="deleteModal{{ $user->id }}" tabindex="-1">
@@ -503,75 +389,4 @@
                     </div>
                 </div>
                 <div>
-                    <div>
-                        @push('scripts')
-                            <script>
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    // Controle de seleção
-                                    const selectAll = document.getElementById('selectAll');
-                                    const selectAllTable = document.getElementById('selectAllTable');
-                                    const checkboxes = document.querySelectorAll('.user-checkbox');
-                                    const selectedCount = document.getElementById('selectedCount');
-                                    const bulkAction = document.getElementById('bulkAction');
-                                    const reasonField = document.getElementById('reasonField');
-                                    const applyBulkAction = document.getElementById('applyBulkAction');
-
-                                    function updateSelectedCount() {
-                                        const selected = document.querySelectorAll('.user-checkbox:checked').length;
-                                        selectedCount.textContent = `${selected} selecionado(s)`;
-                                    }
-
-                                    function toggleReasonField() {
-                                        if (['reject', 'suspend'].includes(bulkAction.value)) {
-                                            reasonField.classList.remove('d-none');
-                                            reasonField.querySelector('textarea').required = true;
-                                        } else {
-                                            reasonField.classList.add('d-none');
-                                            reasonField.querySelector('textarea').required = false;
-                                        }
-                                    }
-
-                                    // Selecionar todos
-                                    selectAll?.addEventListener('change', function() {
-                                        checkboxes.forEach(cb => cb.checked = this.checked);
-                                        updateSelectedCount();
-                                    });
-
-                                    selectAllTable?.addEventListener('change', function() {
-                                        checkboxes.forEach(cb => cb.checked = this.checked);
-                                        updateSelectedCount();
-                                    });
-
-                                    // Atualizar contagem
-                                    checkboxes.forEach(cb => {
-                                        cb.addEventListener('change', updateSelectedCount);
-                                    });
-
-                                    // Mostrar/ocultar campo de motivo
-                                    bulkAction?.addEventListener('change', toggleReasonField);
-
-                                    // Aplicar ação em massa
-                                    applyBulkAction?.addEventListener('click', function() {
-                                        const selected = document.querySelectorAll('.user-checkbox:checked');
-                                        if (selected.length === 0) {
-                                            alert('Selecione pelo menos um usuário.');
-                                            return;
-                                        }
-
-                                        if (!bulkAction.value) {
-                                            alert('Selecione uma ação.');
-                                            return;
-                                        }
-
-                                        if (confirm(`Deseja ${bulkAction.value} ${selected.length} usuário(s)?`)) {
-                                            document.getElementById('bulkForm').submit();
-                                        }
-                                    });
-
-                                    // Inicializar
-                                    updateSelectedCount();
-                                    toggleReasonField();
-                                });
-                            </script>
-                        @endpush
-                    @endsection
+                @endsection
