@@ -172,7 +172,7 @@ class User extends Authenticatable
 
     public function getFullPhotoUrlAttribute()
     {
-        return $this->photo ? asset('storage/' . $this->photo) : asset('images/default-avatar.png');
+        return $this->photo ?? asset('assets/images/avatar-default.jpg');
     }
 
 }

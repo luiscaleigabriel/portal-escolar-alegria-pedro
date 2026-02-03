@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\UserApproved;
+use App\Events\UserRegistered;
+use App\Events\UserRejected;
+use App\Listeners\SendApprovalEmail;
+use App\Listeners\SendRegistrationEmail;
+use App\Listeners\SendRejectionEmail;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -15,8 +21,14 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
+        UserRegistered::class => [
+            SendRegistrationEmail::class,
+        ],
+        UserApproved::class => [
+            SendApprovalEmail::class,
+        ],
+        UserRejected::class => [
+            SendRejectionEmail::class,
         ],
     ];
 
