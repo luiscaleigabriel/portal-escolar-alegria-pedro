@@ -17,8 +17,16 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->set('role', ['admin', 'secretary', 'teacher', 'student', 'parent'])->default('student');
+            $table->boolean('is_active')->default(false);
+            $table->boolean('is_approved')->default(false);
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->date('birth_date')->nullable();
+            $table->string('photo')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
