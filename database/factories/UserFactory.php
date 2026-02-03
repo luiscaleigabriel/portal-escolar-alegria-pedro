@@ -5,35 +5,65 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    public function definition()
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'name' => $this->faker->name(),
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => bcrypt('password'),
+            'role' => $this->faker->randomElement(['student', 'teacher', 'parent']),
+            'is_active' => true,
+            'is_approved' => true,
+            'phone' => $this->faker->phoneNumber(),
+            'address' => $this->faker->address(),
+            'birth_date' => $this->faker->date(),
             'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     *
-     * @return $this
-     */
-    public function unverified(): static
+    public function admin()
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state([
+            'role' => 'admin',
+            'email' => 'admin@escola.com',
+        ]);
+    }
+
+    public function secretary()
+    {
+        return $this->state([
+            'role' => 'secretary',
+            'email' => 'secretaria@escola.com',
+        ]);
+    }
+
+    public function teacher()
+    {
+        return $this->state([
+            'role' => 'teacher',
+        ]);
+    }
+
+    public function student()
+    {
+        return $this->state([
+            'role' => 'student',
+        ]);
+    }
+
+    public function parent()
+    {
+        return $this->state([
+            'role' => 'parent',
+        ]);
+    }
+
+    public function unverified()
+    {
+        return $this->state([
             'email_verified_at' => null,
         ]);
     }
