@@ -5,20 +5,20 @@
             <div class="w-100">
                 <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" class="logo-img mx-auto">
                 <h3 class="mb-3">Junte-se a Nós</h3>
-                <p class="mb-4">Faça parte da família IPP Alegria Pedro e tenha acesso a uma educação de excelência.
+                <p class="mb-4"> Faça parte da família IPP Alegria Pedro e tenha acesso a uma educação de excelência.
                 </p>
                 <div class="text-start">
                     <div class="d-flex align-items-center mb-3">
                         <i class="fas fa-check-circle text-white bg-success rounded-circle p-2 me-3"></i>
-                        <span>Excelência Acadêmica</span>
+                        <span> Excelência Acadêmica</span>
                     </div>
                     <div class="d-flex align-items-center mb-3">
                         <i class="fas fa-check-circle text-white bg-success rounded-circle p-2 me-3"></i>
-                        <span>Professores Qualificados</span>
+                        <span> Professores Qualificados</span>
                     </div>
                     <div class="d-flex align-items-center">
                         <i class="fas fa-check-circle text-white bg-success rounded-circle p-2 me-3"></i>
-                        <span>Tecnologia e Inovação</span>
+                        <span> Tecnologia e Inovação</span>
                     </div>
                 </div>
             </div>
@@ -148,10 +148,10 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-medium">Data de Nascimento *</label>
-                                <input type="date" class="form-control" wire:model="birth_date"
-                                    max="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control @error('birth_date') is-invalid @enderror"
+                                    wire:model="birth_date" max="{{ date('Y-m-d') }}" required>
                                 @error('birth_date')
-                                    <span class="text-danger small">{{ $message }}</span>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-6 mb-3">
@@ -170,9 +170,10 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-medium">Endereço *</label>
-                            <textarea class="form-control" rows="3" placeholder="Digite seu endereço completo" wire:model="address"></textarea>
+                            <textarea class="form-control @error('address') is-invalid @enderror" rows="3"
+                                placeholder="Digite seu endereço completo" wire:model="address" required></textarea>
                             @error('address')
-                                <span class="text-danger small">{{ $message }}</span>
+                                <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -181,13 +182,16 @@
                                 <label class="form-label fw-medium">Nacionalidade</label>
                                 <input type="text" class="form-control" placeholder="ex: Angolana"
                                     wire:model="nationality">
+                                @error('nationality')
+                                    <span class="text-danger small">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-medium">Documento de Identificação *</label>
-                                <input type="text" class="form-control" placeholder="BI/Passaporte"
-                                    wire:model="id_number">
+                                <input type="text" class="form-control @error('id_number') is-invalid @enderror"
+                                    placeholder="BI/Passaporte" wire:model="id_number" required>
                                 @error('id_number')
-                                    <span class="text-danger small">{{ $message }}</span>
+                                    <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
@@ -351,29 +355,55 @@
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function togglePassword(button) {
-            const input = button.parentElement.querySelector('input');
-            const icon = button.querySelector('i');
+<script>
+    document.addEventListener('livewire:init', () => {
+        // Limpar erros quando mudar de passo
+        Livewire.on('step-changed', () => {
+            // O Livewire já limpa os erros automaticamente ao mudar de passo
+        });
 
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
+        // Formatar telefone
+        const phoneInput = document.querySelector('input[wire\\:model="phone"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = '(' + value.substring(0, 3) + ') ' + value.substring(3);
+                }
+                e.target.value = value;
+            });
         }
 
-        // Initialize tooltips
-        document.addEventListener('DOMContentLoaded', function() {
-            const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-            tooltips.forEach(tooltip => {
-                new bootstrap.Tooltip(tooltip);
+        // Formatar data para o formato brasileiro ao exibir
+        const birthDateInput = document.querySelector('input[wire\\:model="birth_date"]');
+        if (birthDateInput) {
+            birthDateInput.addEventListener('change', function(e) {
+                if (e.target.value) {
+                    const date = new Date(e.target.value);
+                    const formattedDate = date.toLocaleDateString('pt-BR');
+                    // Apenas para exibição, o valor real permanece no formato YYYY-MM-DD
+                    console.log('Data formatada:', formattedDate);
+                }
             });
-        });
-    </script>
-</div>
+        }
+    });
+
+    // Função para formatar CPF/BI (exemplo)
+    function formatDocument(input) {
+        let value = input.value.replace(/\D/g, '');
+
+        if (value.length <= 11) {
+            // Formato CPF: 000.000.000-00
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        } else {
+            // Formato BI/Passaporte
+            value = value.substring(0, 14);
+        }
+
+        input.value = value;
+    }
+</script>

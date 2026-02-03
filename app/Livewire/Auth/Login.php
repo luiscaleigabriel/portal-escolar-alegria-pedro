@@ -18,7 +18,7 @@ class Login extends Component
     public $remember = false;
 
     protected $rules = [
-        'password' => 'required|min:8',
+        'password' => 'required',
         'role' => 'required|in:student,teacher,parent,secretary,admin',
         'remember' => 'boolean',
     ];

@@ -3,7 +3,7 @@
     <div class="auth-card row g-0">
         <div class="col-md-5 auth-info d-none d-md-flex">
             <div>
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img mx-auto">
+                <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" class="logo-img mx-auto">
                 <h3 class="mb-3">Bem-vindo ao Portal</h3>
                 <p class="mb-0">Instituto Politécnico Privado Alegria Pedro. Excelência no ensino e inovação
                     tecnológica.
