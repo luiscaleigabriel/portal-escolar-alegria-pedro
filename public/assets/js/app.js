@@ -43,7 +43,7 @@ document.addEventListener('livewire:navigated', function () {
 
 // resources/js/sidebar.js ou adicione no final do arquivo
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Menu ativo baseado na URL atual
     function setActiveMenu() {
         const currentPath = window.location.pathname;
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Submenu toggle
     document.querySelectorAll('.menu-toggle').forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
+        toggle.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu collapse
     const sidebarCollapse = document.getElementById('sidebarCollapse');
     if (sidebarCollapse) {
-        sidebarCollapse.addEventListener('click', function() {
+        sidebarCollapse.addEventListener('click', function () {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('content').classList.toggle('active');
 
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Fechar sidebar ao clicar fora (mobile)
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         const sidebar = document.getElementById('sidebar');
         const content = document.getElementById('content');
 
@@ -145,13 +145,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updateNotificationCounters();
 
     // Livewire navigation handler
-    document.addEventListener('livewire:navigated', function() {
+    document.addEventListener('livewire:navigated', function () {
         setTimeout(setActiveMenu, 100);
     });
 });
 
 // Funções globais para controle do menu
-window.toggleSidebar = function() {
+window.toggleSidebar = function () {
     document.getElementById('sidebar').classList.toggle('active');
     document.getElementById('content').classList.toggle('active');
 
@@ -159,7 +159,7 @@ window.toggleSidebar = function() {
     localStorage.setItem('sidebarCollapsed', isCollapsed);
 };
 
-window.expandAllMenus = function() {
+window.expandAllMenus = function () {
     document.querySelectorAll('.nav-submenu').forEach(menu => {
         menu.classList.add('show');
     });
@@ -168,7 +168,7 @@ window.expandAllMenus = function() {
     });
 };
 
-window.collapseAllMenus = function() {
+window.collapseAllMenus = function () {
     document.querySelectorAll('.nav-submenu').forEach(menu => {
         menu.classList.remove('show');
     });
@@ -176,3 +176,35 @@ window.collapseAllMenus = function() {
         toggle.classList.remove('rotated');
     });
 };
+
+function showSystemDetails() {
+    const modal = new bootstrap.Modal(document.getElementById('systemDetailsModal'));
+    modal.show();
+}
+
+function refreshSystemInfo() {
+    // Aqui você implementaria a atualização das informações do sistema
+    alert('Atualizando informações do sistema...');
+    location.reload();
+}
+
+// Adicionar botão para detalhes do sistema na barra de ações
+document.addEventListener('DOMContentLoaded', function () {
+    const actionBar = document.querySelector('.card-header .d-flex');
+    if (actionBar) {
+        const infoButton = document.createElement('button');
+        infoButton.className = 'btn btn-sm btn-outline-info ms-2';
+        infoButton.innerHTML = '<i class="fas fa-info-circle"></i>';
+        infoButton.title = 'Informações do Sistema';
+        infoButton.onclick = showSystemDetails;
+        actionBar.appendChild(infoButton);
+    }
+});
+
+// Tooltips
+document.addEventListener('DOMContentLoaded', function () {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});

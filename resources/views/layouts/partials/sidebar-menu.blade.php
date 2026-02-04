@@ -143,7 +143,7 @@
        class="nav-link {{ str_starts_with($currentRoute, 'admin.users') ? 'active' : '' }}">
         <i class="fas fa-user-cog"></i> Usuários
     </a>
-    <a href="{{ route('admin.roles') }}"
+    <a href="#"
        class="nav-link {{ str_starts_with($currentRoute, 'admin.roles') ? 'active' : '' }}">
         <i class="fas fa-user-tag"></i> Permissões
     </a>
@@ -152,11 +152,11 @@
        class="nav-link {{ str_starts_with($currentRoute, 'admin.settings') ? 'active' : '' }}">
         <i class="fas fa-cogs"></i> Sistema
     </a>
-    <a href="{{ route('admin.email') }}"
+    <a href="#"
        class="nav-link {{ str_starts_with($currentRoute, 'admin.email') ? 'active' : '' }}">
         <i class="fas fa-envelope"></i> Email
     </a>
-    <a href="{{ route('admin.notifications') }}"
+    <a href="#"
        class="nav-link {{ str_starts_with($currentRoute, 'admin.notifications') ? 'active' : '' }}">
         <i class="fas fa-bell"></i> Notificações
     </a>
@@ -169,7 +169,7 @@
        class="nav-link {{ str_starts_with($currentRoute, 'admin.backup') ? 'active' : '' }}">
         <i class="fas fa-database"></i> Backup
     </a>
-    <a href="{{ route('admin.monitoring') }}"
+    <a href="#"
        class="nav-link {{ str_starts_with($currentRoute, 'admin.monitoring') ? 'active' : '' }}">
         <i class="fas fa-desktop"></i> Monitoramento
     </a>
@@ -178,22 +178,22 @@
 <!-- Comunicação (Comum a todos os roles autenticados) -->
 @if(in_array($role, ['student', 'teacher', 'parent', 'secretary', 'admin']))
 <div class="nav-section-title mt-4">Comunicação</div>
-<a href="{{ route('messages.index') }}"
+<a href="#"
    class="nav-link {{ str_starts_with($currentRoute, 'messages') ? 'active' : '' }}">
     <i class="fas fa-comments"></i> Mensagens
     @if($unreadMessagesCount > 0)
         <span class="badge bg-danger badge-notification">{{ $unreadMessagesCount }}</span>
     @endif
 </a>
-<a href="{{ route('blog.index') }}"
+<a href="#"
    class="nav-link {{ str_starts_with($currentRoute, 'blog') ? 'active' : '' }}">
     <i class="fas fa-newspaper"></i> Blog/Notícias
 </a>
-<a href="{{ route('events.index') }}"
+<a href="#"
    class="nav-link {{ str_starts_with($currentRoute, 'events') ? 'active' : '' }}">
     <i class="fas fa-calendar-check"></i> Eventos
 </a>
-<a href="{{ route('calendar.index') }}"
+<a href="#"
    class="nav-link {{ str_starts_with($currentRoute, 'calendar') ? 'active' : '' }}">
     <i class="fas fa-calendar-alt"></i> Calendário
 </a>
@@ -201,22 +201,22 @@
 
 <!-- Perfil e Configurações (Comum a todos) -->
 <div class="nav-section-title mt-4">Minha Conta</div>
-<a href="{{ route('profile') }}"
+<a href="#"
    class="nav-link {{ str_starts_with($currentRoute, 'profile') ? 'active' : '' }}">
     <i class="fas fa-user"></i> Meu Perfil
 </a>
-<a href="{{ route('settings') }}"
+<a href="#"
    class="nav-link {{ str_starts_with($currentRoute, 'settings') ? 'active' : '' }}">
     <i class="fas fa-cog"></i> Configurações
 </a>
 
 <!-- Ajuda -->
 <div class="nav-section-title mt-4">Suporte</div>
-<a href="{{ route('help') }}"
+<a href="#"
    class="nav-link {{ str_starts_with($currentRoute, 'help') ? 'active' : '' }}">
     <i class="fas fa-question-circle"></i> Ajuda
 </a>
-<a href="{{ route('contact') }}"
+<a href="#"
    class="nav-link {{ str_starts_with($currentRoute, 'contact') ? 'active' : '' }}">
     <i class="fas fa-headset"></i> Contactar Suporte
 </a>

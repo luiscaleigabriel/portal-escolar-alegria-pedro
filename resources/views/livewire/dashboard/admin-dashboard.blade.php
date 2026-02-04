@@ -1,7 +1,7 @@
 @section('page-title', 'Dashboard do Administrador')
 @section('page-subtitle', 'Monitoramento do Sistema')
 
-@section('content')
+<div>
     <div class="fade-in">
         <!-- Estatísticas -->
         <div class="row g-4 mb-5">
@@ -44,7 +44,8 @@
                     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                         <h6 class="fw-bold mb-0">Atividade dos Últimos 7 Dias</h6>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown">
                                 <i class="fas fa-calendar me-2"></i> 7 Dias
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -248,8 +249,7 @@
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-3 col-sm-6">
-                                <a href="#"
-                                    class="card border-none shadow-sm text-decoration-none text-dark">
+                                <a href="#" class="card border-none shadow-sm text-decoration-none text-dark">
                                     <div class="card-body text-center">
                                         <div class="mb-3">
                                             <i class="fas fa-user-cog fa-2x text-primary"></i>
@@ -302,72 +302,8 @@
         </div>
     </div>
 
-    @push('styles')
-        <style>
-            .timeline {
-                position: relative;
-                padding-left: 60px;
-            }
 
-            .timeline-simple {
-                padding-left: 0;
-            }
-
-            .timeline-simple::before {
-                display: none;
-            }
-
-            .timeline-item {
-                display: flex;
-                margin-bottom: 15px;
-            }
-
-            .timeline-item-marker {
-                flex: 0 0 auto;
-                width: 40px;
-                text-align: center;
-                margin-right: 15px;
-            }
-
-            .timeline-item-marker-text {
-                font-size: 0.75rem;
-                color: #6c757d;
-                margin-bottom: 5px;
-            }
-
-            .timeline-item-marker-indicator {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .timeline-item-content {
-                flex: 1;
-                min-width: 0;
-            }
-
-            .card-hover:hover {
-                transform: translateY(-5px);
-                transition: transform 0.3s ease;
-                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            }
-
-            .badge-online {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                display: inline-block;
-                margin-right: 5px;
-            }
-        </style>
-    @endpush
-
-    @push('scripts')
+    @section('js')
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
             document.addEventListener('livewire:init', () => {
@@ -524,7 +460,7 @@
                 }
             });
         </script>
-    @endpush
+    @endsection
 
     <!-- Componente Livewire para notificações -->
     <div>
@@ -637,160 +573,4 @@
             </div>
         </div>
     </div>
-
-    <!-- Script para detalhes do sistema -->
-    <script>
-        function showSystemDetails() {
-            const modal = new bootstrap.Modal(document.getElementById('systemDetailsModal'));
-            modal.show();
-        }
-
-        function refreshSystemInfo() {
-            // Aqui você implementaria a atualização das informações do sistema
-            alert('Atualizando informações do sistema...');
-            location.reload();
-        }
-
-        // Adicionar botão para detalhes do sistema na barra de ações
-        document.addEventListener('DOMContentLoaded', function() {
-            const actionBar = document.querySelector('.card-header .d-flex');
-            if (actionBar) {
-                const infoButton = document.createElement('button');
-                infoButton.className = 'btn btn-sm btn-outline-info ms-2';
-                infoButton.innerHTML = '<i class="fas fa-info-circle"></i>';
-                infoButton.title = 'Informações do Sistema';
-                infoButton.onclick = showSystemDetails;
-                actionBar.appendChild(infoButton);
-            }
-        });
-
-        // Tooltips
-        document.addEventListener('DOMContentLoaded', function() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            const tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-        });
-    </script>
-
-    <style>
-        /* Estilos adicionais */
-        .card-hover {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-card {
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .stat-card .icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        .log-item {
-            border-left: 3px solid;
-            padding-left: 10px;
-            margin-bottom: 10px;
-        }
-
-        .log-item.login {
-            border-color: #28a745;
-        }
-
-        .log-item.error {
-            border-color: #dc3545;
-        }
-
-        .log-item.update {
-            border-color: #17a2b8;
-        }
-
-        .log-item.backup {
-            border-color: #ffc107;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 250px;
-            width: 100%;
-        }
-
-        /* Animações */
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .card-stat-value {
-                font-size: 1.8rem;
-            }
-
-            .timeline {
-                padding-left: 40px;
-            }
-
-            .timeline-item-marker {
-                width: 30px;
-                margin-right: 10px;
-            }
-
-            .timeline-item-marker-indicator {
-                width: 30px;
-                height: 30px;
-                font-size: 0.8rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .card-stat {
-                padding: 20px 15px;
-            }
-
-            .card-stat-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-
-            .card-stat-value {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
-@endsection
+</div>

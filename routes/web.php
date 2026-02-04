@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Admin\{Backup, Logs, Settings, System, Users};
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\Auth\ForgotPassword;
@@ -83,11 +84,11 @@ Route::middleware(['auth', 'approved', 'active'])->group(function () {
 
     // Rotas para administrador
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function() {
-        Route::get('/users', \App\Livewire\Admin\Users::class)->name('users');
-        Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
-        Route::get('/logs', \App\Livewire\Admin\Logs::class)->name('logs');
-        Route::get('/backup', \App\Livewire\Admin\Backup::class)->name('backup');
-        Route::get('/system', \App\Livewire\Admin\System::class)->name('system');
+        Route::get('/users', Users::class)->name('users');
+        Route::get('/settings', Settings::class)->name('settings');
+        Route::get('/logs', Logs::class)->name('logs');
+        Route::get('/backup', Backup::class)->name('backup');
+        Route::get('/system', System::class)->name('system');
     });
 
     // Rotas comuns (acessíveis por todos)
