@@ -71,7 +71,7 @@
         </div>
 
         <div class="py-3">
-            {{-- @includeWhen(auth()->check(), 'layouts.partials.sidebar-menu') --}}
+            @includeWhen(auth()->check(), 'layouts.partials.sidebar-menu')
         </div>
 
         <div class="sidebar-footer">

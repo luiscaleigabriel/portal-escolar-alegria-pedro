@@ -82,13 +82,13 @@ Route::middleware(['auth', 'approved', 'active'])->group(function () {
     // });
 
     // Rotas para administrador
-    // Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function() {
-    //     Route::get('/users', \App\Livewire\Admin\Users::class)->name('users');
-    //     Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
-    //     Route::get('/logs', \App\Livewire\Admin\Logs::class)->name('logs');
-    //     Route::get('/backup', \App\Livewire\Admin\Backup::class)->name('backup');
-    //     Route::get('/system', \App\Livewire\Admin\System::class)->name('system');
-    // });
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function() {
+        Route::get('/users', \App\Livewire\Admin\Users::class)->name('users');
+        Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
+        Route::get('/logs', \App\Livewire\Admin\Logs::class)->name('logs');
+        Route::get('/backup', \App\Livewire\Admin\Backup::class)->name('backup');
+        Route::get('/system', \App\Livewire\Admin\System::class)->name('system');
+    });
 
     // Rotas comuns (acessíveis por todos)
     // Route::prefix('common')->name('common.')->group(function() {

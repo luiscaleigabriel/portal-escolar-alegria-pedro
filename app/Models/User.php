@@ -207,4 +207,44 @@ class User extends Authenticatable
             ->count();
     }
 
+    /**
+     * Contar mensagens não lidas
+     */
+    public function getUnreadMessagesCountAttribute()
+    {
+        if (!$this->id) return 0;
+
+        return \App\Models\Message::where('receiver_id', $this->id)
+            ->where('is_read', false)
+            ->count();
+    }
+
+    /**
+     * Contar tarefas pendentes (apenas para alunos)
+     */
+    public function getPendingTasksCountAttribute()
+    {
+        if (!$this->isStudent()) return 0;
+
+        return \App\Models\Task::whereHas('course', function ($query) {
+            $query->whereHas('students', function ($q) {
+                $q->where('user_id', $this->id);
+            });
+        })
+            ->where('status', 'pending')
+            ->where('due_date', '>=', now())
+            ->count();
+    }
+
+    /**
+     * Contar inscrições pendentes (apenas para secretaria/admin)
+     */
+    public function getPendingRegistrationsCountAttribute()
+    {
+        if (!$this->isSecretary() && !$this->isAdmin()) return 0;
+
+        return self::where('is_approved', false)
+            ->whereIn('role', ['student', 'teacher', 'parent'])
+            ->count();
+    }
 }
