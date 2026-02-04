@@ -29,6 +29,7 @@ class User extends Authenticatable
         'address',
         'birth_date',
         'photo',
+        'last_login_at',
     ];
 
     /**
@@ -205,4 +206,5 @@ class User extends Authenticatable
             ->whereIn('role', ['student', 'teacher', 'parent'])
             ->count();
     }
+
 }
