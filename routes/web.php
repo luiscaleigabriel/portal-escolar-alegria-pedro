@@ -25,6 +25,15 @@ Route::middleware('guest')->group(function () {
 
 // Rotas autenticadas
 Route::middleware(['auth', 'approved', 'active'])->group(function () {
+
+    // Logout
+    Route::post('/logout', function () {
+        auth()->logout();
+        session()->flush();
+        return redirect('/login')->with('message', 'Sessão terminada com sucesso.');
+    })->name('logout');
+
+
     // Dashboard principal
     Route::get('/dashboard', Index::class)->name('dashboard');
 
@@ -35,12 +44,6 @@ Route::middleware(['auth', 'approved', 'active'])->group(function () {
     Route::get('/secretary/dashboard', SecretaryDashboard::class)->name('secretary.dashboard');
     Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
 
-    // Logout
-    Route::get('/logout', function () {
-        auth()->logout();
-        session()->flush();
-        return redirect('/login')->with('message', 'Sessão terminada com sucesso.');
-    })->name('logout');
 
     // Rotas para estudantes
     // Route::middleware('role:student')->prefix('student')->name('student.')->group(function() {
@@ -83,7 +86,7 @@ Route::middleware(['auth', 'approved', 'active'])->group(function () {
     // });
 
     // Rotas para administrador
-    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function() {
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', Users::class)->name('users');
         Route::get('/settings', Settings::class)->name('settings');
         Route::get('/logs', Logs::class)->name('logs');

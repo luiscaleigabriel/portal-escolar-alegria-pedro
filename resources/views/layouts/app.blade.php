@@ -33,16 +33,14 @@
     <!-- Sidebar -->
     <nav id="sidebar" class="fade-in">
         <div class="sidebar-header">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="Logo IPP"
-                onerror="this.src='https://ui-avatars.com/api/?name=IPP&background=003399&color=fff&size=128'">
+            <img src="{{ asset('assets/images/logo.png') }}" alt="Logo IPP">
             <h6 class="fw-bold mb-0">IPP Alegria Pedro</h6>
             <small class="text-white-50">Portal Acadêmico</small>
         </div>
 
         <div class="user-info">
             @auth
-                <img src="{{ auth()->user()->full_photo_url }}" alt="Avatar" class="user-avatar"
-                    onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=0055ff&color=fff&size=128'">
+                <img src="{{ auth()->user()->full_photo_url }}" alt="Avatar" class="user-avatar">
                 <h6 class="mb-1">{{ auth()->user()->name }}</h6>
                 <small class="text-white-50">
                     @switch(auth()->user()->role)
@@ -133,8 +131,7 @@
                     <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
                         data-bs-toggle="dropdown">
                         <img src="{{ auth()->user()->full_photo_url }}" class="rounded-circle" width="45"
-                            height="45" alt="User"
-                            onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=0055ff&color=fff'">
+                            height="45" alt="User">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end shadow">
                         <li>

@@ -32,7 +32,7 @@ class Register extends Component
     public $student_email;
     public $relationship = '';
     public $parent_notes;
-
+    public $updatedRole;
     // Campos específicos para professor
     public $qualification;
     public $specializations = [];

@@ -58,7 +58,7 @@
                     <div class="fade-in">
                         <div class="mb-3">
                             <label class="form-label fw-medium">Tipo de Usuário *</label>
-                            <select class="form-select" wire:model="role" wire:change="updatedRole">
+                            <select class="form-select" wire:model="role" wire:model="updatedRole">
                                 <option value="">Selecione o tipo de conta</option>
                                 <option value="student">Aluno</option>
                                 <option value="teacher">Professor</option>
@@ -376,18 +376,18 @@
             });
         }
 
-        // Formatar data para o formato brasileiro ao exibir
-        const birthDateInput = document.querySelector('input[wire\\:model="birth_date"]');
-        if (birthDateInput) {
-            birthDateInput.addEventListener('change', function(e) {
-                if (e.target.value) {
-                    const date = new Date(e.target.value);
-                    const formattedDate = date.toLocaleDateString('pt-BR');
-                    // Apenas para exibição, o valor real permanece no formato YYYY-MM-DD
-                    console.log('Data formatada:', formattedDate);
-                }
-            });
-        }
+        // // Formatar data para o formato brasileiro ao exibir
+        // const birthDateInput = document.querySelector('input[wire\\:model="birth_date"]');
+        // if (birthDateInput) {
+        //     birthDateInput.addEventListener('change', function(e) {
+        //         if (e.target.value) {
+        //             const date = new Date(e.target.value);
+        //             const formattedDate = date.toLocaleDateString('pt-BR');
+        //             // Apenas para exibição, o valor real permanece no formato YYYY-MM-DD
+        //             console.log('Data formatada:', formattedDate);
+        //         }
+        //     });
+        // }
     });
 
     // Função para formatar CPF/BI (exemplo)
