@@ -176,37 +176,6 @@ class User extends Authenticatable
         return $this->photo ?? asset('assets/images/avatar-default.jpg');
     }
 
-    public function pendingTasksCount()
-    {
-        if (!$this->isStudent()) return 0;
-
-        return Task::whereHas('course', function ($query) {
-            $query->whereHas('students', function ($q) {
-                $q->where('user_id', $this->id);
-            });
-        })
-            ->where('status', 'pending')
-            ->where('due_date', '>=', now())
-            ->count();
-    }
-
-    public function unreadMessagesCount()
-    {
-        return Message::where('receiver_id', $this->id)
-            ->where('is_read', false)
-            ->count();
-    }
-
-    // Para secretaria
-    public function pendingRegistrationsCount()
-    {
-        if (!$this->isSecretary() && !$this->isAdmin()) return 0;
-
-        return self::where('is_approved', false)
-            ->whereIn('role', ['student', 'teacher', 'parent'])
-            ->count();
-    }
-
     /**
      * Contar mensagens não lidas
      */
@@ -232,14 +201,43 @@ class User extends Authenticatable
             });
         })
             ->where('status', 'pending')
-            ->where('due_date', '>=', now())
-            ->count();
+            ->where('due_date', '>=', now());
     }
 
     /**
      * Contar inscrições pendentes (apenas para secretaria/admin)
      */
     public function getPendingRegistrationsCountAttribute()
+    {
+        if (!$this->isSecretary() && !$this->isAdmin()) return 0;
+
+        return self::where('is_approved', false)
+            ->whereIn('role', ['student', 'teacher', 'parent'])
+            ->count();
+    }
+
+    public function pendingTasksCount()
+    {
+        if (!$this->isStudent()) return 0;
+
+        return Task::whereHas('course', function ($query) {
+            $query->whereHas('students', function ($q) {
+                $q->where('user_id', $this->id);
+            });
+        })
+            ->where('status', 'pending')
+            ->where('due_date', '>=', now());
+    }
+
+    public function unreadMessagesCount()
+    {
+        return Message::where('receiver_id', $this->id)
+            ->where('is_read', false)
+            ->count();
+    }
+
+    // Para secretaria
+    public function pendingRegistrationsCount()
     {
         if (!$this->isSecretary() && !$this->isAdmin()) return 0;
 

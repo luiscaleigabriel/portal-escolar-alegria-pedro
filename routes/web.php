@@ -12,6 +12,10 @@ use App\Livewire\Dashboard\ParentDashboard;
 use App\Livewire\Dashboard\SecretaryDashboard;
 use App\Livewire\Dashboard\StudentDashboard;
 use App\Livewire\Dashboard\TeacherDashboard;
+use App\Livewire\Student\Grades;
+use App\Livewire\Student\Profile;
+use App\Livewire\Student\Subjects;
+use App\Livewire\Student\Tasks;
 use Illuminate\Support\Facades\Route;
 
 
@@ -46,14 +50,14 @@ Route::middleware(['auth', 'approved', 'active'])->group(function () {
 
 
     // Rotas para estudantes
-    // Route::middleware('role:student')->prefix('student')->name('student.')->group(function() {
-    //     Route::get('/grades', \App\Livewire\Student\Grades::class)->name('grades');
-    //     Route::get('/subjects', \App\Livewire\Student\Subjects::class)->name('subjects');
-    //     Route::get('/tasks', \App\Livewire\Student\Tasks::class)->name('tasks');
-    //     Route::get('/profile', \App\Livewire\Student\Profile::class)->name('profile');
-    //     Route::get('/timetable', \App\Livewire\Student\Timetable::class)->name('timetable');
-    //     Route::get('/attendances', \App\Livewire\Student\Attendances::class)->name('attendances');
-    // });
+    Route::middleware('role:student')->prefix('student')->name('student.')->group(function() {
+        Route::get('/grades', Grades::class)->name('grades');
+        Route::get('/subjects', Subjects::class)->name('subjects');
+        Route::get('/tasks', Tasks::class)->name('tasks');
+        Route::get('/profile', Profile::class)->name('profile');
+        // Route::get('/timetable', \App\Livewire\Student\Timetable::class)->name('timetable');
+        // Route::get('/attendances', \App\Livewire\Student\Attendances::class)->name('attendances');
+    });
 
     // Rotas para professores
     // Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function() {
@@ -95,16 +99,16 @@ Route::middleware(['auth', 'approved', 'active'])->group(function () {
     });
 
     // Rotas comuns (acessíveis por todos)
-    // Route::prefix('common')->name('common.')->group(function() {
-    //     Route::get('/messages', \App\Livewire\Chat\Index::class)->name('messages.index');
-    //     Route::get('/messages/{user}', \App\Livewire\Chat\Conversation::class)->name('messages.conversation');
-    //     Route::get('/blog', \App\Livewire\Blog\Index::class)->name('blog.index');
-    //     Route::get('/blog/{post}', \App\Livewire\Blog\Show::class)->name('blog.show');
-    //     Route::get('/events', \App\Livewire\Events\Index::class)->name('events.index');
-    //     Route::get('/calendar', \App\Livewire\Calendar\Index::class)->name('calendar');
-    //     Route::get('/profile', \App\Livewire\Profile\Index::class)->name('profile');
-    //     Route::get('/settings', \App\Livewire\Settings\Index::class)->name('settings');
-    //     Route::get('/help', \App\Livewire\Help\Index::class)->name('help');
-    //     Route::get('/contact', \App\Livewire\Contact\Index::class)->name('contact');
-    // });
+    Route::prefix('common')->name('common.')->group(function() {
+        Route::get('/messages', \App\Livewire\Chat\Index::class)->name('messages.index');
+        Route::get('/messages/{user}', \App\Livewire\Chat\Conversation::class)->name('messages.conversation');
+        Route::get('/blog', \App\Livewire\Blog\Index::class)->name('blog.index');
+        Route::get('/blog/{post}', \App\Livewire\Blog\Show::class)->name('blog.show');
+        // Route::get('/events', \App\Livewire\Events\Index::class)->name('events.index');
+        // Route::get('/calendar', \App\Livewire\Calendar\Index::class)->name('calendar');
+        // Route::get('/profile', \App\Livewire\Profile\Index::class)->name('profile');
+        // Route::get('/settings', \App\Livewire\Settings\Index::class)->name('settings');
+        // Route::get('/help', \App\Livewire\Help\Index::class)->name('help');
+        // Route::get('/contact', \App\Livewire\Contact\Index::class)->name('contact');
+    });
 });

@@ -39,7 +39,7 @@ class StudentDashboard extends Component
         // Tarefas pendentes
         $pendingTasksCount = Task::whereHas('course', function($query) use ($user) {
                 $query->whereHas('students', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
+                    // $q->where('user_id', $user->id);
                 });
             })
             ->where('status', 'pending')
@@ -123,7 +123,7 @@ class StudentDashboard extends Component
     {
         $this->pendingTasks = Task::whereHas('course', function($query) {
                 $query->whereHas('students', function($q) {
-                    $q->where('user_id', auth()->id());
+                    // $q->where('user_id', auth()->id());
                 });
             })
             ->with(['subject', 'teacher'])

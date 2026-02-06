@@ -158,7 +158,7 @@
             <div class="card border-none shadow-sm p-4 rounded-4 bg-white">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h6 class="fw-bold mb-0">Últimas Notícias</h6>
-                    <a href="{{ route('blog.index') }}" class="btn btn-sm btn-link">Ver Tudo</a>
+                    <a href="{{ route('common.blog.index') }}" class="btn btn-sm btn-link">Ver Tudo</a>
                 </div>
 
                 @foreach($latestNews as $news)
@@ -170,7 +170,7 @@
                 </div>
                 @endforeach
 
-                <a href="{{ route('blog.index') }}" class="btn btn-outline-primary w-100 mt-2">Aceder ao Blog</a>
+                <a href="{{ route('common.blog.index') }}" class="btn btn-outline-primary w-100 mt-2">Aceder ao Blog</a>
             </div>
         </div>
     </div>
