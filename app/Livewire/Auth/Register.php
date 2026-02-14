@@ -4,313 +4,435 @@ namespace App\Livewire\Auth;
 
 use App\Events\UserRegistered;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Livewire\Component;
 
 class Register extends Component
 {
     public $step = 1;
-    public $name;
-    public $email;
-    public $phone;
-    public $password;
-    public $password_confirmation;
+
+    // Step 1 - Informações Básicas
+    public $name = '';
+    public $email = '';
+    public $phone = '';
+    public $password = '';
+    public $password_confirmation = '';
     public $role = '';
-    public $birth_date;
-    public $address;
-    public $gender;
+
+    // Step 2 - Informações Pessoais
+    public $birth_date = '';
+    public $address = '';
+    public $id_number = '';
+    public $gender = '';
     public $nationality = 'Angolana';
-    public $id_number;
+
+    // Step 3 - Aceitação de Termos
     public $accept_terms = false;
 
     // Campos específicos para aluno
-    public $student_number;
-    public $academic_year;
-    public $course_area;
+    public $student_number = '';
+    public $academic_year = '';
+    public $course_area = '';
 
     // Campos específicos para responsável
-    public $student_email;
+    public $student_email = '';
     public $relationship = '';
-    public $parent_notes;
-    public $updatedRole;
+    public $parent_notes = '';
+
     // Campos específicos para professor
-    public $qualification;
+    public $qualification = '';
     public $specializations = [];
     public $experience_years = 0;
 
-    // Regras dinâmicas baseadas no passo
-    public function getRules()
+    // Controlar erros manualmente
+    public $errors = [];
+
+    protected function getStep1Rules()
     {
-        $rules = [];
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|min:9|unique:users',
+            'password' => 'required|string|min:8',
+            'password_confirmation' => 'required|same:password',
+            'role' => 'required|in:student,teacher,parent',
+        ];
+    }
 
-        // Regras para passo 1
-        if ($this->step == 1) {
-            $rules = [
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'phone' => 'required|string|min:9|unique:users',
-                'password' => 'required|string|min:8|confirmed',
-                'role' => 'required|in:student,teacher,parent',
-            ];
+    protected function getStep2Rules()
+    {
+        return [
+            'birth_date' => 'required|date|before:today',
+            'address' => 'required|string|max:500',
+            'id_number' => 'required|string|max:50|unique:users,id_number',
+            'gender' => 'nullable|in:male,female,other',
+            'nationality' => 'nullable|string|max:100',
+        ];
+    }
+
+    protected function getStep3Rules()
+    {
+        $rules = [
+            'accept_terms' => 'required|accepted',
+        ];
+
+        if ($this->role === 'student') {
+            $rules['student_number'] = 'required|string|unique:users,student_number';
+            $rules['academic_year'] = 'nullable|integer|min:' . (date('Y') - 5) . '|max:' . (date('Y') + 5);
+            $rules['course_area'] = 'nullable|string|max:255';
         }
-
-        // Regras para passo 2
-        if ($this->step == 2) {
-            $rules = [
-                'birth_date' => 'required|date|before:today',
-                'address' => 'required|string|max:500',
-                'id_number' => 'required|string|max:50|unique:users,id_number',
-            ];
-
-            // Campos opcionais no passo 2
-            if ($this->gender) {
-                $rules['gender'] = 'in:male,female,other';
-            }
-            if ($this->nationality) {
-                $rules['nationality'] = 'string|max:100';
-            }
+        elseif ($this->role === 'teacher') {
+            $rules['qualification'] = 'required|string|max:255';
+            $rules['specializations'] = 'required|array|min:1';
+            $rules['experience_years'] = 'nullable|integer|min:0|max:50';
         }
-
-        // Regras para passo 3
-        if ($this->step == 3) {
-            $rules = [
-                'accept_terms' => 'required|accepted',
-            ];
-
-            // Regras específicas por role
-            if ($this->role === 'student') {
-                $rules['student_number'] = 'required|string|unique:users,student_number';
-
-                // Campos opcionais para aluno
-                if ($this->academic_year) {
-                    $rules['academic_year'] = 'integer|min:' . (date('Y') - 5) . '|max:' . (date('Y') + 5);
-                }
-                if ($this->course_area) {
-                    $rules['course_area'] = 'string|max:255';
-                }
-            }
-            elseif ($this->role === 'teacher') {
-                $rules['qualification'] = 'required|string|max:255';
-                $rules['specializations'] = 'required|array|min:1';
-
-                // Campos opcionais para professor
-                if ($this->experience_years) {
-                    $rules['experience_years'] = 'integer|min:0|max:50';
-                }
-            }
-            elseif ($this->role === 'parent') {
-                $rules['student_email'] = 'required|email|exists:users,email';
-                $rules['relationship'] = 'required|in:father,mother,guardian,other';
-
-                // Campo opcional para responsável
-                if ($this->parent_notes) {
-                    $rules['parent_notes'] = 'string|max:500';
-                }
-            }
+        elseif ($this->role === 'parent') {
+            $rules['student_email'] = 'required|email|exists:users,email';
+            $rules['relationship'] = 'required|in:father,mother,guardian,other';
+            $rules['parent_notes'] = 'nullable|string|max:500';
         }
 
         return $rules;
     }
 
     protected $messages = [
+        // Step 1
+        'name.required' => 'O nome completo é obrigatório.',
+        'email.required' => 'O email é obrigatório.',
+        'email.email' => 'Digite um email válido.',
+        'email.unique' => 'Este email já está registado.',
+        'phone.required' => 'O telefone é obrigatório.',
+        'phone.min' => 'O telefone deve ter pelo menos 9 dígitos.',
+        'phone.unique' => 'Este telefone já está registado.',
+        'password.required' => 'A senha é obrigatória.',
+        'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
+        'password_confirmation.required' => 'A confirmação de senha é obrigatória.',
+        'password_confirmation.same' => 'As senhas não coincidem.',
+        'role.required' => 'Selecione o tipo de usuário.',
+
+        // Step 2
+        'birth_date.required' => 'A data de nascimento é obrigatória.',
+        'birth_date.date' => 'Digite uma data válida.',
+        'birth_date.before' => 'A data de nascimento deve ser anterior a hoje.',
+        'address.required' => 'O endereço é obrigatório.',
+        'id_number.required' => 'O documento de identificação é obrigatório.',
+        'id_number.unique' => 'Este documento já está registado.',
+
+        // Step 3
         'accept_terms.required' => 'Você deve aceitar os termos e condições.',
         'accept_terms.accepted' => 'Você deve aceitar os termos e condições.',
-        'student_email.exists' => 'O email do estudante não existe no sistema.',
-        'id_number.unique' => 'Este número de documento já está registado.',
+        'student_number.required' => 'O número de estudante é obrigatório.',
         'student_number.unique' => 'Este número de estudante já está registado.',
-        'birth_date.before' => 'A data de nascimento deve ser anterior a hoje.',
-        'password.confirmed' => 'As senhas não coincidem.',
-        'password.min' => 'A senha deve ter pelo menos 8 caracteres.',
+        'student_email.required' => 'O email do estudante é obrigatório.',
+        'student_email.exists' => 'O email do estudante não existe no sistema.',
+        'relationship.required' => 'O parentesco é obrigatório.',
+        'qualification.required' => 'A qualificação acadêmica é obrigatória.',
+        'specializations.required' => 'Selecione pelo menos uma especialização.',
     ];
 
-    // Sobrescrever o método validate para usar regras dinâmicas
-    public function validate($rules = null, $messages = [], $attributes = [])
+    public function mount()
     {
-        $rules = $this->getRules();
-        parent::validate($rules, $messages, $attributes);
+        $this->academic_year = (string) date('Y');
+        $this->nationality = 'Angolana';
+        $this->experience_years = 0;
+        $this->password = '';
+        $this->password_confirmation = '';
     }
 
-    public function updated($propertyName)
+    public function updated($property, $value)
     {
-        // Validar apenas se o campo pertence ao passo atual
-        if ($this->shouldValidateField($propertyName)) {
-            $this->validateOnly($propertyName);
+        // Limpar erro específico quando o campo é atualizado
+        if (isset($this->errors[$property])) {
+            unset($this->errors[$property]);
+        }
+
+        // Formatar telefone
+        if ($property === 'phone') {
+            $this->phone = $this->formatPhone($value);
+        }
+
+        // Formatar documento
+        if ($property === 'id_number') {
+            $this->id_number = $this->formatDocument($value);
+        }
+
+        // Validar confirmação de senha em tempo real
+        if ($property === 'password' || $property === 'password_confirmation') {
+            if (!empty($this->password) && !empty($this->password_confirmation)) {
+                if ($this->password !== $this->password_confirmation) {
+                    $this->errors['password_confirmation'] = 'As senhas não coincidem.';
+                } else {
+                    unset($this->errors['password_confirmation']);
+                }
+            }
         }
     }
 
-    private function shouldValidateField($field)
+    private function formatPhone($value)
     {
-        // Mapear campos para seus passos
-        $fieldSteps = [
-            // Passo 1
-            'name' => 1,
-            'email' => 1,
-            'phone' => 1,
-            'password' => 1,
-            'password_confirmation' => 1,
-            'role' => 1,
+        $value = preg_replace('/[^0-9]/', '', $value);
 
-            // Passo 2
-            'birth_date' => 2,
-            'address' => 2,
-            'gender' => 2,
-            'nationality' => 2,
-            'id_number' => 2,
+        if (strlen($value) > 0) {
+            if (strlen($value) <= 3) {
+                $value = '(' . $value;
+            } elseif (strlen($value) <= 6) {
+                $value = '(' . substr($value, 0, 3) . ') ' . substr($value, 3);
+            } else {
+                $value = '(' . substr($value, 0, 3) . ') ' . substr($value, 3, 3) . ' ' . substr($value, 6, 3);
+            }
+        }
 
-            // Passo 3
-            'accept_terms' => 3,
-            'student_number' => 3,
-            'academic_year' => 3,
-            'course_area' => 3,
-            'student_email' => 3,
-            'relationship' => 3,
-            'parent_notes' => 3,
-            'qualification' => 3,
-            'specializations' => 3,
-            'experience_years' => 3,
-        ];
+        return $value;
+    }
 
-        return isset($fieldSteps[$field]) && $fieldSteps[$field] == $this->step;
+    private function formatDocument($value)
+    {
+        $value = preg_replace('/[^0-9]/', '', $value);
+
+        if (strlen($value) <= 11) {
+            $value = preg_replace('/(\d{3})(\d)/', '$1.$2', $value);
+            $value = preg_replace('/(\d{3})(\d)/', '$1.$2', $value);
+            $value = preg_replace('/(\d{3})(\d{1,2})$/', '$1-$2', $value);
+        }
+
+        return $value;
+    }
+
+    public function validateStep1()
+    {
+        $this->errors = [];
+        $rules = $this->getStep1Rules();
+        $valid = true;
+
+        // Validação individual de cada campo
+        foreach ($rules as $field => $rule) {
+            $data = [$field => $this->$field];
+
+            // Para validação de confirmação, precisamos enviar ambos os campos
+            if ($field === 'password_confirmation') {
+                $data = [
+                    'password' => $this->password,
+                    'password_confirmation' => $this->password_confirmation
+                ];
+                $rule = 'required|same:password';
+            }
+
+            $validator = Validator::make($data, [$field => $rule], $this->messages);
+
+            if ($validator->fails()) {
+                $this->errors[$field] = $validator->errors()->first($field);
+                $valid = false;
+            }
+        }
+
+        // Validação adicional para garantir que ambos os campos de senha foram preenchidos
+        if (empty($this->password) && empty($this->errors['password'])) {
+            $this->errors['password'] = 'A senha é obrigatória.';
+            $valid = false;
+        }
+
+        if (empty($this->password_confirmation) && empty($this->errors['password_confirmation'])) {
+            $this->errors['password_confirmation'] = 'A confirmação de senha é obrigatória.';
+            $valid = false;
+        }
+
+        return $valid;
+    }
+
+    public function validateStep2()
+    {
+        $this->errors = [];
+        $rules = $this->getStep2Rules();
+        $valid = true;
+
+        foreach ($rules as $field => $rule) {
+            $validator = Validator::make([$field => $this->$field], [$field => $rule], $this->messages);
+
+            if ($validator->fails()) {
+                $this->errors[$field] = $validator->errors()->first($field);
+                $valid = false;
+            }
+        }
+
+        return $valid;
+    }
+
+    public function validateStep3()
+    {
+        $this->errors = [];
+        $rules = $this->getStep3Rules();
+        $valid = true;
+
+        foreach ($rules as $field => $rule) {
+            $validator = Validator::make([$field => $this->$field], [$field => $rule], $this->messages);
+
+            if ($validator->fails()) {
+                $this->errors[$field] = $validator->errors()->first($field);
+                $valid = false;
+            }
+        }
+
+        // Validação adicional para email do estudante
+        if ($this->role === 'parent' && !empty($this->student_email) && empty($this->errors['student_email'])) {
+            $studentExists = User::where('email', $this->student_email)
+                ->where('role', 'student')
+                ->exists();
+
+            if (!$studentExists) {
+                $this->errors['student_email'] = 'Estudante não encontrado. Verifique o email.';
+                $valid = false;
+            }
+        }
+
+        return $valid;
     }
 
     public function nextStep()
     {
-        // Validar apenas os campos do passo atual
-        $this->validate();
-
-        // Validações adicionais
-        if ($this->step == 2 && $this->role === 'parent') {
-            // Verificar se o estudante existe
-            $student = User::where('email', $this->student_email)
-                ->where('role', 'student')
-                ->first();
-
-            if (!$student) {
-                $this->addError('student_email', 'Estudante não encontrado ou email inválido.');
-                return;
+        if ($this->step == 1) {
+            if ($this->validateStep1()) {
+                $this->step = 2;
+                $this->errors = [];
+            }
+        } elseif ($this->step == 2) {
+            if ($this->validateStep2()) {
+                $this->step = 3;
+                $this->errors = [];
             }
         }
-
-        $this->step++;
     }
 
     public function previousStep()
     {
         $this->step--;
-
-        // Limpar erros quando voltar
-        $this->resetErrorBag();
+        $this->errors = [];
     }
 
     public function register()
     {
-        // Validar apenas os campos do passo 3
-        $this->validate();
+        if (!$this->validateStep3()) {
+            return;
+        }
 
-        // Validação adicional para responsável
-        if ($this->role === 'parent') {
-            $student = User::where('email', $this->student_email)
-                ->where('role', 'student')
-                ->first();
+        try {
+            DB::beginTransaction();
 
-            if (!$student) {
-                $this->addError('student_email', 'Estudante não encontrado. Verifique o email.');
-                return;
+            $userData = [
+                'name' => $this->name,
+                'email' => $this->email,
+                'phone' => preg_replace('/[^0-9]/', '', $this->phone),
+                'password' => Hash::make($this->password),
+                'role' => $this->role,
+                'birth_date' => $this->birth_date,
+                'address' => $this->address,
+                'id_number' => $this->id_number,
+                'is_active' => false,
+                'is_approved' => false,
+            ];
+
+            // Campos opcionais
+            if (!empty($this->gender)) {
+                $userData['gender'] = $this->gender;
             }
-        }
 
-        // Criar usuário
-        $userData = [
-            'name' => $this->name,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'password' => Hash::make($this->password),
-            'role' => $this->role,
-            'birth_date' => $this->birth_date,
-            'address' => $this->address,
-            'is_active' => false,
-            'is_approved' => false,
-        ];
-
-        // Adicionar campos opcionais se existirem
-        if ($this->gender) {
-            $userData['gender'] = $this->gender;
-        }
-        if ($this->nationality) {
-            $userData['nationality'] = $this->nationality;
-        }
-        if ($this->id_number) {
-            $userData['id_number'] = $this->id_number;
-        }
-
-        $user = User::create($userData);
-
-        // Adicionar campos específicos
-        if ($this->role === 'student') {
-            $user->student_number = $this->student_number;
-            if ($this->academic_year) {
-                $user->academic_year = $this->academic_year;
+            if (!empty($this->nationality)) {
+                $userData['nationality'] = $this->nationality;
             }
-            if ($this->course_area) {
-                $user->course_area = $this->course_area;
+
+            // Campos específicos por role
+            if ($this->role === 'student') {
+                $userData['student_number'] = $this->student_number;
+                $userData['academic_year'] = !empty($this->academic_year) ? (int) $this->academic_year : null;
+                $userData['course_area'] = $this->course_area;
             }
-        }
-        elseif ($this->role === 'teacher') {
-            $user->qualification = $this->qualification;
-            $user->specializations = json_encode($this->specializations);
-            if ($this->experience_years) {
-                $user->experience_years = $this->experience_years;
+            elseif ($this->role === 'teacher') {
+                $userData['qualification'] = $this->qualification;
+                $userData['specializations'] = json_encode($this->specializations);
+                $userData['experience_years'] = (int) $this->experience_years;
             }
-        }
 
-        $user->save();
+            $user = User::create($userData);
 
-        // Vincular responsável ao aluno
-        if ($this->role === 'parent') {
-            $student = User::where('email', $this->student_email)
-                ->where('role', 'student')
-                ->first();
+            // Vincular responsável ao aluno
+            if ($this->role === 'parent' && !empty($this->student_email)) {
+                $student = User::where('email', $this->student_email)
+                    ->where('role', 'student')
+                    ->first();
 
-            if ($student) {
-                $user->children()->attach($student->id, [
-                    'relationship' => $this->relationship,
-                    'notes' => $this->parent_notes ?? null
-                ]);
+                if ($student) {
+                    $user->children()->attach($student->id, [
+                        'relationship' => $this->relationship,
+                        'notes' => $this->parent_notes,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
+
+            DB::commit();
+
+            event(new UserRegistered($user));
+
+            session()->flash('message', '✅ Sua inscrição foi enviada com sucesso! Aguarde a aprovação da secretaria.');
+
+            $this->resetForm();
+
+            return redirect()->route('login');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erro no registro: ' . $e->getMessage(), [
+                'email' => $this->email,
+                'role' => $this->role,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->errors['register'] = 'Ocorreu um erro ao processar seu registro. Por favor, tente novamente.';
         }
-
-        // Disparar evento de registro
-        event(new UserRegistered($user));
-
-        // Mostrar mensagem de sucesso
-        session()->flash('message', '✅ Sua inscrição foi enviada com sucesso! Aguarde a aprovação da secretaria. Você receberá um email quando sua conta for aprovada.');
-
-        // Limpar formulário
-        $this->resetForm();
-
-        // Redirecionar para login
-        return redirect()->route('login');
     }
 
     private function resetForm()
     {
-        $this->reset([
-            'step', 'name', 'email', 'phone', 'password', 'password_confirmation',
-            'role', 'birth_date', 'address', 'gender', 'nationality', 'id_number',
-            'accept_terms', 'student_number', 'academic_year', 'course_area',
-            'student_email', 'relationship', 'parent_notes', 'qualification',
-            'specializations', 'experience_years'
-        ]);
-        $this->resetErrorBag();
+        $this->step = 1;
+        $this->name = '';
+        $this->email = '';
+        $this->phone = '';
+        $this->password = '';
+        $this->password_confirmation = '';
+        $this->role = '';
+        $this->birth_date = '';
+        $this->address = '';
+        $this->id_number = '';
+        $this->gender = '';
+        $this->nationality = 'Angolana';
+        $this->accept_terms = false;
+        $this->student_number = '';
+        $this->academic_year = (string) date('Y');
+        $this->course_area = '';
+        $this->student_email = '';
+        $this->relationship = '';
+        $this->parent_notes = '';
+        $this->qualification = '';
+        $this->specializations = [];
+        $this->experience_years = 0;
+        $this->errors = [];
+    }
+
+    public function getError($field)
+    {
+        return $this->errors[$field] ?? null;
+    }
+
+    public function hasError($field)
+    {
+        return isset($this->errors[$field]);
     }
 
     public function render()
     {
-        // Definir ano académico padrão
-        if (empty($this->academic_year)) {
-            $this->academic_year = date('Y');
-        }
-
         return view('livewire.auth.register')->layout('layouts.guest');
     }
 }
